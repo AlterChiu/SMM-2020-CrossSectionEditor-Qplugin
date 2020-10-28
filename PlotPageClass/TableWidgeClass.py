@@ -1,31 +1,22 @@
 from PyQt5.QtWidgets import QTableWidget,QFrame,QAbstractItemView,QHeaderView,QTableWidgetItem
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
-import math
 import statistics
+import traceback
+import sys
 
 class TableWidgeClass:
 
-    __tableData = None #[[x,y,l,z] , [x,y,l,z].....]
+    __tableData = [] #[[x,y,l,z] , [x,y,l,z].....]
 
     def __init__(self , tableWidget:QTableWidget):
 
-        # setFont
-        #----------------------------
-        self.__titleFont = QFont('Microsoft YaHei', 14)
-        self.__titleFont.setBold(True)
-        self.__itemFont = QFont('Microsoft YaHei',12)
 
         # set table
         #----------------------------
         self.__tableWidget = tableWidget
         
-        # setTitle
-        self.__tableWidget.horizontalHeader().setFont(self.__titleFont) #font
-        self.__tableWidget.horizontalHeader().setFixedHeight(50) #title height
-        self.__tableWidget.setColumnCount(6) # set 6 column
         #self.__tableWidget.horizontalHeader().setSectionResizeMode(5,QHeaderView.Stretch)# set 6 column autoSize
-        self.__tableWidget.setHorizontalHeaderLabels(['X','Y','L','Z'])# set title text
         self.__tableWidget.horizontalHeader().setSectionsClickable(False) # unable click title
 
         # data
@@ -48,6 +39,7 @@ class TableWidgeClass:
         __tableData = []
         self.__startX = x
         self.__startY = y
+        self.__startZ = z
 
         try:
             deltX = self.__startX - self.__endX
@@ -63,6 +55,7 @@ class TableWidgeClass:
         __tableData = []
         self.__endX = x
         self.__endY = y
+        self.__endZ = z
 
         try:
             deltX = self.__startX - self.__endX
@@ -73,9 +66,7 @@ class TableWidgeClass:
 
     def addPoint(self , l:float , z:float):
         try:
-
-
-            if math.abs(l) <= self.__totalLength/2:
+            if abs(l) <= self.__totalLength/2.0:
 
                 # normalize y-z chart, which center y=0
                 temptXY = self.__lengthToXY(l)
@@ -83,8 +74,9 @@ class TableWidgeClass:
                 temptY = temptXY[1]
 
                 # add to collection
-                self.__tableData.append([temptX , temptY , l , z])
-                self.__tableData.sort(key = lambda s:s[2])
+                __tableData.append([temptX , temptY , l , z])
+
+                __tableData.sort(key = lambda s:s[2])
 
                 # add to table
                 self.__addLine(temptX , temptY , l ,z)
@@ -93,14 +85,15 @@ class TableWidgeClass:
                 self.__tableWidget.sortByColumn(2)
             else:
                 print("invalid point")
-        except:
-            print("missing startEnd points: \r\n")
-            print("startPoint: " + self.__startX  + "\t" + self.__startY + "\r\n")
-            print("endPoint: " + self.__endX + "\t" + self.__endY + "\r\n")
+        except Exception:
+            traceback.print_exc(file=sys.stdout)
+            print("missing points:")
+            print("startPoint: " + str(self.__startX)  + "\t" + str(self.__startY))
+            print("endPoint: " + str(self.__endX) + "\t" + str(self.__endY))
         
     def deletPoint(self , index:int):
         try:
-            self.__tableData.pop(index)
+            __tableData.pop(index)
         except:
             pass
     
@@ -185,7 +178,7 @@ class TableWidgeClass:
         # detect by range
         for row in range(0,len(__tableData)):
             if __tableData[row][3]*range > 0:
-                temptZ = self.__tableData[row][3] + moveZ
+                temptZ = __tableData[row][3] + moveZ
                 self.setValue(row,3,temptZ)
 
 
@@ -220,7 +213,7 @@ class TableWidgeClass:
         self.__tableWidget.sortByColumn(2)
 
     def __reloadRow(self,row:int):
-        temptL = self.__tableData[row][2]
+        temptL = __tableData[row][2]
         temptXY = self.__lengthToXY(temptL)
         self.__tableWidget.setItem(row , 0 , QTableWidgetItem(temptXY[0]))
         self.__tableWidget.setItem(row , 1 , QTableWidgetItem(temptXY[1]))

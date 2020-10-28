@@ -34,7 +34,7 @@ class PlotPageClass:
         self.__plotClass = PlotWidgetClass(self.__plotWidget)
 
         # table widget
-        self.__editTable = self.__dlg.findChild(QtWidgets.QTabWidget , "editTableWidget")
+        self.__editTable = self.__dlg.findChild(QtWidgets.QTableWidget , "editTableWidget")
         self.__tableClass = TableWidgeClass(self.__editTable)
 
 
@@ -108,7 +108,7 @@ class PlotPageClass:
             geometryValueList = self.__getRasterValues(geometryList[0])
             self.__plotClass.addDataPrimary(geometryValueList)
 
-            # plot line from sbkCrossSection
+        # plot sbkCrossSection
 
             # add data to tableWidget and plot line
             try:
@@ -117,20 +117,43 @@ class PlotPageClass:
                 yzLine = json.loads(selectedFeature["profile"]) 
 
                 # normalize the yzLine, to make centerX to 0
-                # data format : [[x1,x2...xn] , [y1,y2.....yn]]
+                # data format : [[[x1,x2...xn] , [y1,y2.....yn]]]
                 yzLine = self.__plotClass.addDataSBK(yzLine)
 
                 # add to tableWidget
-                self.__editTable
+                #-------------------------------------------------
+                verticeList = list(list(self.__splitLineLayer.selectedFeatures())[0].geometry().vertices())
+                
+                # add startPoint
+                startX = verticeList[0].x()
+                startY = verticeList[0].y()
+                startZ = 0.0
+                try:
+                    startZ = verticeList[0].z()
+                except:
+                    print("error parse startPoint")
+                self.__tableClass.setStartPoint(startX , startY , startZ)
+
+                # add endPoint
+                endX = verticeList[-1].x()
+                endY = verticeList[-1].y()
+                endZ = 0.0
+                try:
+                    endZ = verticeList[-1].z()
+                except:
+                    print("error parse endPoint")
+                self.__tableClass.setEndPoint(endX , endY , endZ)
+
+                # add other points
+                yList = yzLine[0][0]
+                zList = yzLine[0][1]
+                
+                for index in range(0,len(yList)):
+                    self.__tableClass.addPoint(yList[index] , zList[index])
 
             except:
-                pass
-            
-            try:
-                yzLine = json.loads(selectedFeature["profile"])
-                self.__plotClass.addDataSBK(yzLine)
-            except:
-                print("y-z profile parse error")
+                print("error table create faild")
+
                 
 
             # set title
