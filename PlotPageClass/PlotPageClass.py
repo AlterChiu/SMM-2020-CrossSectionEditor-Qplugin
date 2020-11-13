@@ -17,6 +17,8 @@ import math
 from .PlotWidgetClass import PlotWidgetClass
 from .TableWidgeClass import TableWidgeClass
 
+import traceback
+
 
 class PlotPageClass:
     def __init__(self , dlg, firstPageClass):
@@ -35,7 +37,7 @@ class PlotPageClass:
 
         # table widget
         self.__editTable = self.__dlg.findChild(QtWidgets.QTableWidget , "editTableWidget")
-        self.__tableClass = TableWidgeClass(self.__editTable)
+        self.__tableClass = TableWidgeClass(self.__editTable , self.__plotClass)
 
 
         self.__saveButton = self.__dlg.findChild(QtWidgets.QPushButton , "SaveButton")
@@ -64,7 +66,6 @@ class PlotPageClass:
         self.__splitLineLayer.selectionChanged.connect(lambda:self.__reFreshPlotWidget())
         self.__splitLineLayer.geometryChanged.connect(lambda:self.__reFreshPlotWidget())
         #"""
-
 
     # dialog functions
     #-----------------------------------------------------------
@@ -118,7 +119,7 @@ class PlotPageClass:
 
                 # normalize the yzLine, to make centerX to 0
                 # data format : [[[x1,x2...xn] , [y1,y2.....yn]]]
-                yzLine = self.__plotClass.addDataSBK(yzLine)
+                yzLine = self.__plotClass.dataNormalize(yzLine)
 
                 # add to tableWidget
                 #-------------------------------------------------
@@ -145,13 +146,17 @@ class PlotPageClass:
                 self.__tableClass.setEndPoint(endX , endY , endZ)
 
                 # add other points
-                yList = yzLine[0][0]
-                zList = yzLine[0][1]
+                yList = yzLine[0]
+                zList = yzLine[1]
                 
                 for index in range(0,len(yList)):
                     self.__tableClass.addPoint(yList[index] , zList[index])
 
+                #reload table
+                self.__tableClass.reload()
+
             except:
+                traceback.print_exc()
                 print("error table create faild")
 
                 
@@ -174,7 +179,8 @@ class PlotPageClass:
                 self.__plotClass.addDataSecondary(geometryValueList)
 
         # plot on widget
-        self.__plotClass.plot()
+        self.__plotClass.plotPrimary()
+        self.__plotClass.plotSecondary()
 
     # get Raster layer properties
     def __getRasterValues(self , geometry):

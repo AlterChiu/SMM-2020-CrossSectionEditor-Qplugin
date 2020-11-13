@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QTableWidget,QFrame,QAbstractItemView,QHeaderView,QTableWidgetItem
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
 import statistics
@@ -6,12 +7,15 @@ import traceback
 import sys
 import math
 
+from .PlotWidgetClass import PlotWidgetClass
+
 class TableWidgeClass:
 
    
 
-    def __init__(self , tableWidget:QTableWidget):
-
+    def __init__(self , tableWidget:QTableWidget , plotClass:PlotWidgetClass):
+        # get plotClass
+        self.__plotClass = plotClass
 
         # set table
         #----------------------------
@@ -79,9 +83,6 @@ class TableWidgeClass:
                 self.__tableData.append([temptX , temptY , l , z])
                 self.__tableData.sort(key = lambda s:s[2])
 
-                # reload
-                self.__reload()
-
             else:
                 print("invalid point")
         except Exception:
@@ -104,13 +105,6 @@ class TableWidgeClass:
         except:
             print("table setValue caught error")
             pass
-
-
-
-
-
-
-
 
 
 
@@ -187,34 +181,54 @@ class TableWidgeClass:
         row = self.__tableWidget.rowCount()
         self.__tableWidget.insertRow(row)
 
-        self.__tableWidget.setItem(row , 0 , QTableWidgetItem(str(x)))
-        self.__tableWidget.setItem(row , 1 , QTableWidgetItem(str(y)))
-        self.__tableWidget.setItem(row , 2 , QTableWidgetItem(str(l)))
-        self.__tableWidget.setItem(row , 3 , QTableWidgetItem(str(z)))
+        temptXitem = QTableWidgetItem(str(x))
+        temptYitem = QTableWidgetItem(str(y))
+        temptLitem = QTableWidgetItem(str(l))
+        temptZitem = QTableWidgetItem(str(z))
+
+        self.__tableWidget.setItem(row , 0 , temptXitem)
+        self.__tableWidget.setItem(row , 1 , temptYitem)
+        self.__tableWidget.setItem(row , 2 , temptLitem)
+        self.__tableWidget.setItem(row , 3 , temptZitem)
 
         self.__tableWidget.item(row,0).setFlags(Qt.ItemIsEditable)
         self.__tableWidget.item(row,1).setFlags(Qt.ItemIsEditable)
 
-    def __reload(self):
+    def reload(self):
+
+        # initial table
         self.__tableWidget.setRowCount(0)
+        self.__tableWidget.disconnect()
 
-        # add startPoint
-        #self.__addLine(self.__startX , self.__startY , 0 , self.__startZ)
-
-        # add endPoint
-        #self.__addLine(self.__endX , self.__endY , self.__totalLength , self.__endZ)
+        # create SBK line format
+        sbkTemptList=[] #[[l1,z1],[l2,z2]...[ln,zn]]
 
         # add other point
-        for index in range(-1 , len(self.__tableData)*-1-1 , -1):
-            point = self.__tableData[index]
+        for point in self.__tableData:
             self.__addLine(point[0] , point[1] , point[2] , point[3])
+            sbkTemptList.append([point[2] , point[3]])
 
+        # add onChange signal
+        self.__tableWidget.cellChanged.connect(self.__reloadRow)
+    
+        # replot SBK line
+        self.__plotClass.rePlotSBK(sbkTemptList)
 
-    def __reloadRow(self,row:int):
-        temptL = self.__tableData[row][2]
-        temptXY = self.__lengthToXY(temptL)
-        self.__tableWidget.setItem(row , 0 , QTableWidgetItem(temptXY[0]))
-        self.__tableWidget.setItem(row , 1 , QTableWidgetItem(temptXY[1]))
+    def __reloadRow(self,row:int , column:int):
+        if column >=2 and column <=3:
+            temptL = None
+            try:
+                temptL = float(self.__tableWidget.item(row , column).text())
+                self.__tableData[row][column] = temptL
+            except:
+                temptL = self.__tableData[row][column]
+        
+            temptXY = self.__lengthToXY(temptL)
+            self.__tableData[row][0] = temptXY[0]
+            self.__tableData[row][1] = temptXY[1]
+            
+            self.__tableData.sort(key = lambda s:s[2])
+            self.reload()
 
     def __lengthToXY(self,l:float)->list:
         
@@ -226,9 +240,16 @@ class TableWidgeClass:
         temptY = self.__startY + deltY * (1 + l/self.__totalLength)
         return [temptX , temptY]
 
+    def clear(self):
+        self.__tableData = []
+        self.__tableWidget.disconnect()
+        self.__tableWidget.setRowCount(0)
+#===================================TEST===================
+    def __test__itemOnChanged(self , row:int , column:int):
+        print("item on change " + str(row) + "\t" + str(column))
 
-
-
+    def __test__itemOnEnter(self):
+        print("item on enter")
 
 
 
