@@ -81,7 +81,6 @@ class TableWidgeClass:
 
                 # add to collection
                 self.__tableData.append([temptX , temptY , l , z])
-                self.__tableData.sort(key = lambda s:s[2])
 
             else:
                 print("invalid point")
@@ -114,65 +113,108 @@ class TableWidgeClass:
 
     # valuelist = [x,y,z]
     def replace(self , valueList:list):
-
-        # sorted by x
-        sortedList = sorted(valueList , key= lambda s:s[0])
+        # clear table data
+        self.__tableData = []
 
         # set start end points
-        self.setStartPoint(sortedList[0][0] , sortedList[0][1])
-        self.setEndPoint(sortedList[-1][0] , sortedList[-1][1])
+        self.setStartPoint(valueList[-1][0] , valueList[-1][1] , valueList[-1][2])
+        self.setEndPoint(valueList[0][0] , valueList[0][1], valueList[0][2])
 
         # set other point to y-z
         temptLList=[]
         temptZList=[]
-        for index in range(1,len(valueList)-1):
+        for index in range(0,len(valueList)):
             deltX = valueList[index][0] - self.__startX
             deltY = valueList[index][1] - self.__startY
             temptLength = math.sqrt(math.pow(deltX,2)+math.pow(deltY,2))
             
             temptLList.append(temptLength)
-            temptLList.append(valueList[index][2])
+            temptZList.append(valueList[index][2])
 
         #add point
-        meanL = statistics.mean(temptLList)
+        midL = (max(temptLList) + min(temptLList))/2
         for index in range(0,len(temptLList)):
-            self.addPoint(meanL - temptLList[index] , temptZList[index])
-
-    def rightDataMove(self , moveL:float=0 , moveZ:float=0):
-        if moveL != 0:
-            self.__tableDataMoveL(moveL,1)
+            self.addPoint(midL - temptLList[index] , temptZList[index])
         
-        if moveZ !=0:
-            self.__tableDataMoveZ(moveZ,1)
+        self.reload()
+
+    def rightDataMove(self , ratio:float=1.0,  moveL:float=0):
+        self.__tableDataRatioMoveL(ratio=ratio , moveL=moveL , direction=1)
+        self.reload()
     
-    def leftDataMove(self , moveL:float=0 , moveZ:float=0):
-        if moveL != 0:
-            self.__tableDataMoveL(moveL,-1)
-        
-        if moveZ !=0:
-            self.__tableDataMoveZ(moveZ,-1)
+    def leftDataMove(self ,  ratio:float=1.0 , moveL:float=0):
+        self.__tableDataRatioMoveL(ratio=ratio , moveL=moveL , direction=-1)
+        self.reload()
 
-    def __tableDataMoveL(self , moveL:float , range:int): # range <0:left , >0:right
+    def topDataMove(self , ratio:float=1.0 ,moveZ:float=0):
+        self.__tableDataRatioMoveZ(ratio=ratio , moveZ=moveZ , direction=1)
+        self.reload()
+
+    def bottomDataMove(self,ratio:float=1.0 , moveZ:float=0):
+        self.__tableDataRatioMoveZ(ratio=ratio , moveZ=moveZ , direction=-1)
+        self.reload()
+
+    def dataMove(self , moveZ:float=0 , moveL:float=0):
+        for row in range(0 , len(self.__tableData)):
+            temptL = self.__tableData[row][2] + moveL
+            temptXY = self.__lengthToXY(temptL)
+
+            self.__tableData[row][0] = temptXY[0]
+            self.__tableData[row][1] = temptXY[1]
+            self.__tableData[row][2] = temptL
+            self.__tableData[row][3] = self.__tableData[row][3] + moveZ
+        self.reload()
+
+    def dataZoom(self , zoom:float=0):
+        if zoom > 0:
+            self.__tableDataRatioMoveL(zoom , 0)
+            self.__tableDataRatioMoveZ(zoom , 0)
+        self.reload()
+
+
+    # move => persantage to move
+    # moveL = 1.05, which L will change from 1 to 1.05 (2 to 2.10), same as moveZ
+    def __tableDataRatioMoveL(self , ratio:float=1.0 , moveL:float=0 , direction:int=0): # direction <0:left , >0:right , 0: bothSide
+        
+        # get middle L
+        temptLList = []
+        for point in self.__tableData:  
+            temptLList.append(point[2])
+        middleL = (max(temptLList) + min(temptLList))/2
 
         # detect by range
         for row in range(0,len(self.__tableData)):
-            if self.__tableData[row][3]*range > 0:
-                temptL = self.__tableData[row][2] + moveL
+            temptL = self.__tableData[row][2]
+            if direction==0:
+                temptL = (self.__tableData[row][2]-middleL)*abs(ratio) + middleL +moveL
 
-                # change value then reload selected row    
-                if math.abs(temptL) < self.__totalLength/2 and temptL*range>0:
-                    temptXY = self.__lengthToXY(temptL)
-                    self.setValue(row,0 , temptXY[0])
-                    self.setValue(row,1 , temptXY[1])
-                    self.__reloadRow(row)
+            elif (self.__tableData[row][2]-middleL)*direction > 0:
+                temptL = (self.__tableData[row][2]-middleL)*abs(ratio) + middleL + moveL
 
-    def __tableDataMoveZ(self , moveZ:float , range:int):# range <0:left , >0:right
+            temptXY = self.__lengthToXY(temptL)
+            self.__tableData[row][0] = temptXY[0]
+            self.__tableData[row][1] = temptXY[1]
+            self.__tableData[row][2] = temptL
+ 
+    def __tableDataRatioMoveZ(self , ratio:float=1.0 , moveZ:float=0.0 , direction:int=0):# direction <0:bottom , >0:top, 0: bothSide
+        
+        # get middle Z
+        temptZList = []
+        for point in self.__tableData:
+            temptZList.append(point[3])
+        middleZ = (max(temptZList) + min(temptZList))/2
         
         # detect by range
         for row in range(0,len(self.__tableData)):
-            if self.__tableData[row][3]*range > 0:
-                temptZ = self.__tableData[row][3] + moveZ
-                self.setValue(row,3,temptZ)
+            temptZ = self.__tableData[row][3]
+            if direction == 0:
+                temptZ = (self.__tableData[row][3] -middleZ)*(abs(ratio)) + middleZ + moveZ
+
+            elif (self.__tableData[row][3] - middleZ)*direction > 0:
+                temptZ = (self.__tableData[row][3] -middleZ)*(abs(ratio)) + middleZ + moveZ
+
+            self.__tableData[row][3] = temptZ
+                
 
 
     # private function
@@ -202,8 +244,9 @@ class TableWidgeClass:
 
         # create SBK line format
         sbkTemptList=[] #[[l1,z1],[l2,z2]...[ln,zn]]
-
+       
         # add other point
+        self.__tableData.sort(key = lambda s:s[2])
         for point in self.__tableData:
             self.__addLine(point[0] , point[1] , point[2] , point[3])
             sbkTemptList.append([point[2] , point[3]])

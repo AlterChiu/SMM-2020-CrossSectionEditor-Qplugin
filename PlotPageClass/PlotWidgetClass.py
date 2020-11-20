@@ -117,7 +117,7 @@ class PlotWidgetClass:
             pass
         self.__dataLinePrimary=[]
 
-    def addDataPrimary(self , valueList:list): #valueList = [[x,y] , [x,y]]
+    def addDataPrimary(self , valueList:list): #valueList = [[x,y,z] , [x,y,z]]
         self.__addData(valueList , self.__dataLinePrimary)
 
     def addDataSBK(self , valueList:list): #valueList = [[x,y] , [x,y]]
@@ -131,7 +131,7 @@ class PlotWidgetClass:
 
         self.__dataLineSBK.append([temptXList , temptYList])
         
-    def addDataSecondary(self , valueList:list):#valueList = [[x,y] , [x,y]]
+    def addDataSecondary(self , valueList:list):#valueList = [[x,y,z] , [x,y,z]]
         self.__addData(valueList , self.__dataLineList)
 
     # add one more data to dataLine collection
@@ -189,7 +189,7 @@ class PlotWidgetClass:
         
         # general valueList
         # make the centerX=0
-        meanX = statistics.mean(temptXList)
+        meanX = (max(temptXList) + min(temptXList))/2
         for index in range(0,len(valueList)):
             temptXList[index] = temptXList[index] - meanX
 
