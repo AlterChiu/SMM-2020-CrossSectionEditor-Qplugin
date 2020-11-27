@@ -96,6 +96,29 @@ class TableWidgeClass:
         except:
             pass
     
+    def addNewRow(self):
+
+        # disconnect
+        try:
+            self.__tableWidget.disconnect()
+        except:
+            pass
+
+        self.addPoint(0,0)
+        newRow = self.__tableData[-1]
+        self.__addLine(newRow[0] , newRow[1] , newRow[2] , newRow[3])
+        self.__tableWidget.scrollToBottom()
+
+        # add onChange signal
+        self.__tableWidget.cellChanged.connect(self.__reloadRow)
+
+    def deletSelectedRow(self):
+        selections = self.__tableWidget.selectionModel().selectedIndexes()
+        for selection in selections:
+            print(selection.row())
+            self.deletPoint(selection.row())
+        self.reload()
+
     # only operate after l,z edit
     def setValue(self , row:int , column:int , value:float)->list: #return [x,y]
         try:
@@ -182,19 +205,54 @@ class TableWidgeClass:
             temptLList.append(point[2])
         middleL = (max(temptLList) + min(temptLList))/2
 
-        # detect by range
+        # moving
         for row in range(0,len(self.__tableData)):
             temptL = self.__tableData[row][2]
             if direction==0:
-                temptL = (self.__tableData[row][2]-middleL)*abs(ratio) + middleL +moveL
+                temptL = self.__tableData[row][2] +moveL
 
             elif (self.__tableData[row][2]-middleL)*direction > 0:
-                temptL = (self.__tableData[row][2]-middleL)*abs(ratio) + middleL + moveL
+                temptL = self.__tableData[row][2] + moveL
 
             temptXY = self.__lengthToXY(temptL)
             self.__tableData[row][0] = temptXY[0]
             self.__tableData[row][1] = temptXY[1]
             self.__tableData[row][2] = temptL
+
+
+        # ratio
+        if ratio != 1.0 and direction != 0:
+
+            # get limit L
+            rightLimit = None
+            leftLimit = None
+            napPoint = None
+            if direction > 0:
+                rightLimit = max(temptLList)
+                leftLimit = middleL
+                napPoint = rightLimit
+
+            else:
+                rightLimit = middleL
+                leftLimit = min(temptLList)
+                napPoint = leftLimit
+            
+            # get close to limit value
+            for row in range(0,len(self.__tableData)):
+                temptL = self.__tableData[row][2]
+                if (self.__tableData[row][2] - middleL)*direction > 0:
+                    temptL = temptL + abs(napPoint - temptL) * ratio * direction
+                    
+                    # check value range
+                    if temptL < leftLimit:
+                        temptL = leftLimit
+                    elif temptL > rightLimit:
+                        temptL = rightLimit
+                                  
+                temptXY = self.__lengthToXY(temptL)
+                self.__tableData[row][0] = temptXY[0]
+                self.__tableData[row][1] = temptXY[1]
+                self.__tableData[row][2] = temptL
  
     def __tableDataRatioMoveZ(self , ratio:float=1.0 , moveZ:float=0.0 , direction:int=0):# direction <0:bottom , >0:top, 0: bothSide
         
@@ -204,17 +262,49 @@ class TableWidgeClass:
             temptZList.append(point[3])
         middleZ = (max(temptZList) + min(temptZList))/2
         
-        # detect by range
+
+        # moving
         for row in range(0,len(self.__tableData)):
             temptZ = self.__tableData[row][3]
+
             if direction == 0:
-                temptZ = (self.__tableData[row][3] -middleZ)*(abs(ratio)) + middleZ + moveZ
+                temptZ = self.__tableData[row][3] + moveZ
 
             elif (self.__tableData[row][3] - middleZ)*direction > 0:
-                temptZ = (self.__tableData[row][3] -middleZ)*(abs(ratio)) + middleZ + moveZ
-
-            self.__tableData[row][3] = temptZ
+                temptZ = self.__tableData[row][3] + moveZ
                 
+            self.__tableData[row][3] = temptZ
+
+        # ratio
+        if ratio != 1.0 and direction != 0:
+
+            # get limit Z
+            topLimit = None
+            bottomLimit = None
+            napPoint = None
+            if direction > 0:
+                topLimit = max(temptZList)
+                bottomLimit = middleZ
+                napPoint = topLimit
+
+            else:
+                topLimit = middleZ
+                bottomLimit = min(temptZList)
+                napPoint = bottomLimit
+            
+            # get close to limit value
+            for row in range(0,len(self.__tableData)):
+                temptZ = self.__tableData[row][3]
+                if (self.__tableData[row][3] - middleZ)*direction > 0:
+                    temptZ = temptZ + abs(napPoint - temptZ) * ratio * direction
+                
+                    # check value range
+                    if temptZ < bottomLimit:
+                        temptZ = bottomLimit
+                    elif temptZ > topLimit:
+                        temptZ = topLimit
+                                  
+                self.__tableData[row][3] = temptZ
 
 
     # private function
@@ -236,11 +326,17 @@ class TableWidgeClass:
         self.__tableWidget.item(row,0).setFlags(Qt.ItemIsEditable)
         self.__tableWidget.item(row,1).setFlags(Qt.ItemIsEditable)
 
+        return temptLitem
+
     def reload(self):
 
         # initial table
-        self.__tableWidget.setRowCount(0)
-        self.__tableWidget.disconnect()
+        try:
+            self.__tableWidget.setRowCount(0)
+            self.__tableWidget.disconnect()
+        except:
+            pass
+
 
         # create SBK line format
         sbkTemptList=[] #[[l1,z1],[l2,z2]...[ln,zn]]

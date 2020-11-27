@@ -151,11 +151,20 @@ class FirstPageClass:
             self.__splitLineLayer = self.__splitLineComboBox.currentData()
             self.__splitLineIdTitle = self.__splitLineFeatureComboBox.currentText()
 
+            # disconnect
+            self.__nextButton.disconnect()
+            self.__splitLineComboBox.disconnect()
+            self.__demComboBox.disconnect()
+
             # close dlg and open another
             self.__dlg.done(0)
             self.__isClose = True
             self.__dlg = PlotPage()
             self.__dlg.show()
 
+
+
             # create plotPageClass
             PlotPageClass(self.__dlg , self)
+
+        

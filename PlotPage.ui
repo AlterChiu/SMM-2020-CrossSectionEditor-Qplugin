@@ -10,6 +10,18 @@
     <height>665</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>711</width>
+    <height>665</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>711</width>
+    <height>655</height>
+   </size>
+  </property>
   <property name="tabletTracking">
    <bool>false</bool>
   </property>

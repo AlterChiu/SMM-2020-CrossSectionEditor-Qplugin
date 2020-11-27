@@ -172,10 +172,10 @@ class PlotPageClass:
         return 0
     
     def __addRow(self):
-        return 0
+        self.__tableClass.addNewRow()
 
     def __deleteRow(self):
-        return 0
+        self.__tableClass.deletSelectedRow()
 
     def __moveUp(self):
         self.__tableClass.dataMove(moveZ=0.1)
@@ -190,28 +190,28 @@ class PlotPageClass:
         self.__tableClass.dataMove(moveL=-1.0)
 
     def __ratioTopOut(self):
-        self.__tableClass.topDataMove(ratio=1.05)
+        self.__tableClass.topDataMove(ratio=0.15)
 
     def __ratioTopIn(self):
-        self.__tableClass.topDataMove(ratio=0.95)
+        self.__tableClass.topDataMove(ratio=-0.15)
 
     def __ratioBottomOut(self):
-        self.__tableClass.bottomDataMove(ratio=1.05)
+        self.__tableClass.bottomDataMove(ratio=0.15)
     
     def __ratioBottomIn(self):
-        self.__tableClass.bottomDataMove(ratio=0.95)
+        self.__tableClass.bottomDataMove(ratio=-0.15)
 
     def __ratioRightOut(self):
-        self.__tableClass.rightDataMove(ratio=1.05)
+        self.__tableClass.rightDataMove(ratio=0.15)
 
     def __ratioRightIn(self):
-        self.__tableClass.rightDataMove(ratio=0.95)
+        self.__tableClass.rightDataMove(ratio=-0.15)
     
     def __ratioLeftOut(self):
-        self.__tableClass.leftDataMove(ratio=1.05)
+        self.__tableClass.leftDataMove(ratio=0.15)
 
     def __ratioLeftIn(self):
-        self.__tableClass.leftDataMove(ratio=0.95)
+        self.__tableClass.leftDataMove(ratio=-0.15)
 
     def __moveTopOut(self):
         self.__tableClass.topDataMove(moveZ=0.1)
