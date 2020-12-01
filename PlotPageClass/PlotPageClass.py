@@ -135,8 +135,6 @@ class PlotPageClass:
      # getting parameter from first page
         self.__demLayer = firstPageClass.getDemLayer()
         self.__splitLineLayer = firstPageClass.getSplitLineLayer()
-        self.__splitLineIdFeildName = firstPageClass.getSplitLineIdFeildName()
-        self.__sbkCrossSectionProfile = firstPageClass.getSbkCrossSectionProfile()
       
      # getting rasterLayer parameter
         self.__demSize = self.__getRasterSize()
@@ -167,9 +165,6 @@ class PlotPageClass:
         except:
             traceback.print_exc(file=sys.stdout)
             print("replace error")
-
-        
-        return 0
     
     def __addRow(self):
         self.__tableClass.addNewRow()
@@ -246,16 +241,16 @@ class PlotPageClass:
     def __replaceResolutionUp(self):
         if(self.__rasterReplaceResolution +1 <50.0):
             self.__rasterReplaceResolution  = self.__rasterReplaceResolution  +1
-            self.__replace(resolution=self.__rasterReplaceResolution)
         else:
             self.__rasterReplaceResolution = self.__rasterDetectLength
+        self.__replace(resolution=self.__rasterReplaceResolution)
 
     def __replaceResolutionDown(self):
-        if(self.__rasterReplaceResolution -1 >self.__rasterDetectLength):
-            self.__rasterReplaceResolution  = self.__rasterReplaceResolution  -1
-            self.__replace(resolution=self.__rasterReplaceResolution)
+        if(self.__rasterReplaceResolution -1 <self.__rasterDetectLength):
+            self.__rasterReplaceResolution  = 50.0
         else:
-            self.__rasterReplaceResolution = self.__rasterDetectLength
+            self.__rasterReplaceResolution = self.__rasterReplaceResolution -1
+        self.__replace(resolution=self.__rasterReplaceResolution)
 
     #plot widget
     #------------------------------------------------------------
@@ -392,11 +387,11 @@ class PlotPageClass:
 
         # create vertice
         for vertice in temptVertices:
-            res = self.__demLayer.dataProvider().identify(QgsPointXY(vertice.x() , vertice.y()), QgsRaster.IdentifyFormatValue).results()           
             try:
-                 outputList.append([vertice.x() , vertice.y() , res[1]])
+                res = self.__demLayer.dataProvider().identify(QgsPointXY(vertice.x() , vertice.y()), QgsRaster.IdentifyFormatValue).results()  
+                outputList.append([vertice.x() , vertice.y() , res[1]])
             except:
-                pass  
+                outputList.append([vertice.x() , vertice.y() , 0.0])  
         return outputList
 
     def __getRasterSize(self):
