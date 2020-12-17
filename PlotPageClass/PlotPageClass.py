@@ -13,6 +13,7 @@ import json
 #system py
 import math
 import sys
+import requests
 
 #userCreate py
 from .PlotWidgetClass import PlotWidgetClass
@@ -22,12 +23,14 @@ import traceback
 
 
 class PlotPageClass:
+
     def __init__(self , dlg, firstPageClass):
 
      # constant
         self.__rasterDetectLength = 0.5
         self.__rasterReplaceResolution = self.__rasterDetectLength
-    
+        self.__nullValue = -999.0
+
      # get dlg
         self.__dlg = dlg
 
@@ -135,7 +138,8 @@ class PlotPageClass:
      # getting parameter from first page
         self.__demLayer = firstPageClass.getDemLayer()
         self.__splitLineLayer = firstPageClass.getSplitLineLayer()
-      
+        self.__editCounty = firstPageClass.getEditorCounty()
+
      # getting rasterLayer parameter
         self.__demSize = self.__getRasterSize()
 
@@ -152,7 +156,54 @@ class PlotPageClass:
     #-----------------------------------------------------------
   
     def __save(self):
-        return 0
+
+        try:
+            # get selected feature
+            selectedFeature = list(self.__splitLineLayer.selectedFeatures())[0]
+            featureID = selectedFeature["id"]
+            
+            # get table data
+            tableData = self.__tableClass.getTableValues()
+
+            # get startPoint and endPoint, [x,y,z]
+            startPoint = self.__tableClass.getStartPoint()
+            endPoint = self.__tableClass.getEndPoint()
+
+            # get boundary length
+            maxLength = math.sqrt(pow(startPoint[0] - endPoint[0],2) + pow(startPoint[1] - endPoint[1],2))
+
+            # create output profile
+            outProfile = []
+
+            # add start point
+            outProfile.append([-1*maxLength/2 , endPoint[2]])
+
+            # add other points which within the boundary
+            for rowData in tableData: #[x,y,l,z]
+                if abs(rowData[2] < maxLength/2):
+                    outProfile.append([rowData[2] , rowData[3]])
+
+            # add end point
+            outProfile.append([maxLength/2  , startPoint[2]])
+
+            # update to rest-api (patch)
+            data = {"startPoint":startPoint,"endPoint":endPoint,"profile":outProfile}
+            header = {"content-type":"application/json"}
+            request = requests.patch("https://h2-demo.pointing.tw/api/cross-sections/" + self.__editCounty + "/" + featureID ,data=json.dumps(data),headers=header)
+            print(request.text)
+
+            # new id
+            newID = "X" + str(int((startPoint[0] + endPoint[0])/2)) + "-Y" + str(int((startPoint[1] + endPoint[1])/2))
+
+            # commit to layer
+            selectedFeature["id"] = newID
+            selectedFeature["profile"] = str(outProfile)
+            self.__splitLineLayer.updateFeature(selectedFeature)
+            
+
+        except:
+            traceback.print_exc()
+            Exception("save error")
 
     def __restore(self):
         self.__reFreshPlotWidget()
@@ -305,21 +356,19 @@ class PlotPageClass:
                 # add startPoint
                 startX = verticeList[0].x()
                 startY = verticeList[0].y()
-                startZ = 0.0
-                try:
-                    startZ = verticeList[0].z()
-                except:
-                    print("error parse startPoint")
+                startZ = self.__getRasterValue(startX , startY)
+                if startZ == self.__nullValue:
+                    startZ = 0.0
+
                 self.__tableClass.setStartPoint(startX , startY , startZ)
 
                 # add endPoint
                 endX = verticeList[-1].x()
                 endY = verticeList[-1].y()
-                endZ = 0.0
-                try:
-                    endZ = verticeList[-1].z()
-                except:
-                    print("error parse endPoint")
+                endZ = self.__getRasterValue(endX , endY)
+                if startZ == self.__nullValue:
+                    endZ = 0.0
+
                 self.__tableClass.setEndPoint(endX , endY , endZ)
 
                 # add other points
@@ -372,11 +421,12 @@ class PlotPageClass:
             temptY = vertice.y() - startPoint[1]
             temptDis = math.sqrt(pow(temptX , 2) + pow(temptY , 2))
 
-            res = self.__demLayer.dataProvider().identify(QgsPointXY(vertice.x() , vertice.y()), QgsRaster.IdentifyFormatValue).results()           
-            try:
-                 outputList.append([temptDis , res[1]])
-            except:
-                pass  
+            temptZ = self.__getRasterValue(vertice.x() , vertice.y())
+            if(temptZ != self.__nullValue):
+                outputList.append([temptDis , temptZ])
+            else:
+                outputList.append([temptDis, 0.0])
+                
         return outputList
     
     # get Raster layer properties
@@ -387,12 +437,20 @@ class PlotPageClass:
 
         # create vertice
         for vertice in temptVertices:
-            try:
-                res = self.__demLayer.dataProvider().identify(QgsPointXY(vertice.x() , vertice.y()), QgsRaster.IdentifyFormatValue).results()  
-                outputList.append([vertice.x() , vertice.y() , res[1]])
-            except:
-                outputList.append([vertice.x() , vertice.y() , 0.0])  
+
+            temptZ = self.__getRasterValue(vertice.x() , vertice.y())
+            if(temptZ != self.__nullValue):
+                outputList.append([vertice.x() , vertice.y() , temptZ])
+            else:
+                outputList.append([vertice.x() , vertice.y() , 0.0])
         return outputList
+
+    def __getRasterValue(self , x:float , y:float)->float:
+        try:
+            res = self.__demLayer.dataProvider().identify(QgsPointXY(x , y), QgsRaster.IdentifyFormatValue).results()  
+            return res[1]
+        except:
+            return self.__nullValue
 
     def __getRasterSize(self):
         pixelX = self.__demLayer.rasterUnitsPerPixelX()

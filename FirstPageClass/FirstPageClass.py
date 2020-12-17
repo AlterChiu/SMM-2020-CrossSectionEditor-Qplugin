@@ -10,6 +10,7 @@ from ..FramePage import PlotPage
 from ..PlotPageClass.PlotPageClass import PlotPageClass
 import requests
 import traceback
+import json
 
 import sys
 
@@ -34,6 +35,9 @@ class FirstPageClass:
         self.__splitLineLayer = None
         self.__demLayer = None
 
+        # edit county
+        self.__editCounty = None
+
         # check isClosed
         self.__isClose = False
 
@@ -41,6 +45,10 @@ class FirstPageClass:
     #----------------------------------------------------------------------------
     def getSplitLineLayer(self):
         return self.__splitLineLayer
+
+    def getEditorCounty(self):
+        return self.__editCounty
+
 
     def getDemLayer(self):
         return self.__demLayer
@@ -75,13 +83,14 @@ class FirstPageClass:
       #check every input layer is exist
       #----------------------------------------------------------------------
         checker = 0
-      
+        self.__nextButton.setEnabled(False)
+
       # ckeckDem
         if self.__demComboBox.currentText == "":
             Exception("splitLine could not be null")
             checker = 1
+            self.__nextButton.setEnabled(True)
 
-    
       # turn to next page
         if checker == 0:
             
@@ -90,8 +99,40 @@ class FirstPageClass:
             try:
                 # save crossSection json to file
                 request = requests.get(self.__countyComboBox.currentData())
-                writer = AtFileWriter(request.text, crossSectionTemptPath).textWriter("")
-            
+                temptJson = json.loads(request.text)
+                self.__editCounty = self.__countyComboBox.currentText()
+
+                # make the geometry only has start and endPoint in it
+                for feature in temptJson["features"]:
+                    temptGeometryPoints = feature["geometry"]["coordinates"]
+                    
+                    # outList
+                    outGeometryPoints =[]
+                    outGeometryPoints.append(temptGeometryPoints[0])
+                    outGeometryPoints.append(temptGeometryPoints[-1])
+                    feature["geometry"]["coordinates"] = outGeometryPoints
+
+                    # remove not necessary feild
+                    try:
+                        del feature["properties"]["originalId"]
+                    except:
+                        pass
+                    try:
+                        del feature["properties"]["node_py"]
+                    except:
+                        pass
+                    try:
+                        del feature["properties"]["node_px"]
+                    except:
+                        pass
+                    try:
+                        del feature["properties"]["node_nm"]
+                    except:
+                        pass
+                    
+                # write json to temptFile
+                writer = AtFileWriter(json.dumps(temptJson), crossSectionTemptPath).textWriter("")
+
                 # load tempt jsonFile as layer
                 self.__splitLineLayer = QgsVectorLayer(crossSectionTemptPath,"crossSection" , "ogr")
                 self.__splitLineLayer.setCrs(QgsCoordinateReferenceSystem(3826),True)

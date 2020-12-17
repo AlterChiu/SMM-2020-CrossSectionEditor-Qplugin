@@ -36,7 +36,7 @@ class TableWidgeClass:
 
         self.__totalLength = None
 
-    # public finctions
+    # public functions
     #--------------------------------------------------------------
     def setStartPoint(self , x:float , y:float , z:float):
         self.__startX = None
@@ -119,6 +119,15 @@ class TableWidgeClass:
             self.deletPoint(selection.row())
         self.reload()
 
+    def getTableValues(self)->list: #[[x,y,l,z]....]
+        return self.__tableData
+    
+    def getStartPoint(self)->list: #[x,y,z]
+        return [self.__startX , self.__startY , self.__startZ]
+    
+    def getEndPoint(self)->list: #[x,y,z]
+        return [self.__endX , self.__endY , self.__endZ]
+
     # only operate after l,z edit
     def setValue(self , row:int , column:int , value:float)->list: #return [x,y]
         try:
@@ -140,8 +149,8 @@ class TableWidgeClass:
         self.__tableData = []
 
         # set start end points
-        self.setStartPoint(valueList[-1][0] , valueList[-1][1] , valueList[-1][2])
-        self.setEndPoint(valueList[0][0] , valueList[0][1], valueList[0][2])
+        self.setStartPoint(valueList[0][0] , valueList[0][1] , valueList[0][2])
+        self.setEndPoint(valueList[-1][0] , valueList[-1][1], valueList[-1][2])
 
         # set other point to y-z
         temptLList=[]
@@ -157,7 +166,7 @@ class TableWidgeClass:
         #add point
         midL = (max(temptLList) + min(temptLList))/2
         for index in range(0,len(temptLList)):
-            self.addPoint(midL - temptLList[index] , temptZList[index])
+            self.addPoint(temptLList[index]-midL , temptZList[index])
         
         self.reload()
 
@@ -375,8 +384,8 @@ class TableWidgeClass:
         deltX = self.__endX - self.__startX
         deltY = self.__endY - self.__startY
 
-        temptX = self.__startX + deltX * (1 + l/self.__totalLength)
-        temptY = self.__startY + deltY * (1 + l/self.__totalLength)
+        temptX = self.__startX + deltX * ((l + self.__totalLength/2) / self.__totalLength)
+        temptY = self.__startY + deltY * ((l + self.__totalLength/2) / self.__totalLength)
         return [temptX , temptY]
 
     def clear(self):
