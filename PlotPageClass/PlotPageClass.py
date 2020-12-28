@@ -18,6 +18,7 @@ import requests
 #userCreate py
 from .PlotWidgetClass import PlotWidgetClass
 from .TableWidgeClass import TableWidgeClass
+from .FixPointClass import FixPointClass
 
 import traceback
 
@@ -39,6 +40,9 @@ class PlotPageClass:
         # plot widget
         self.__plotWidget = self.__dlg.findChild(pyqtgraph.PlotWidget , "plotWidget")
         self.__plotClass = PlotWidgetClass(self.__plotWidget)
+
+        # fix point widget
+        self.__fixPointsWidget = FixPointClass(dlg , self.__plotClass)
 
         # table widget
         self.__editTable = self.__dlg.findChild(QtWidgets.QTableWidget , "editTableWidget")
@@ -144,8 +148,6 @@ class PlotPageClass:
         self.__demSize = self.__getRasterSize()
 
      # detect if selected geometry onchange
-
-        self.__currentSelectedGeometryID=None
         #"""
         self.__splitLineLayer.startEditing()
         self.__splitLineLayer.selectionChanged.connect(lambda:self.__reFreshPlotWidget())
@@ -167,7 +169,10 @@ class PlotPageClass:
 
             # get startPoint and endPoint, [x,y,z]
             startPoint = self.__tableClass.getStartPoint()
+            startPoint[2] = self.__getRasterValue(startPoint[0] , startPoint[1])
+
             endPoint = self.__tableClass.getEndPoint()
+            endPoint[2] = self.__getRasterValue(endPoint[0] , endPoint[1])
 
             # get boundary length
             maxLength = math.sqrt(pow(startPoint[0] - endPoint[0],2) + pow(startPoint[1] - endPoint[1],2))
@@ -176,7 +181,7 @@ class PlotPageClass:
             outProfile = []
 
             # add start point
-            outProfile.append([-1*maxLength/2 , endPoint[2]])
+            outProfile.append([-1*maxLength/2 , startPoint[2]])
 
             # add other points which within the boundary
             for rowData in tableData: #[x,y,l,z]
@@ -184,7 +189,7 @@ class PlotPageClass:
                     outProfile.append([rowData[2] , rowData[3]])
 
             # add end point
-            outProfile.append([maxLength/2  , startPoint[2]])
+            outProfile.append([maxLength/2  , endPoint[2]])
 
             # update to rest-api (patch)
             data = {"startPoint":startPoint,"endPoint":endPoint,"profile":outProfile}
@@ -308,105 +313,141 @@ class PlotPageClass:
     def __reFreshPlotWidget(self):
         # clear plot widge
         self.__plotClass.clear()
-        self.__currentSelectedGeometryID=None
         self.__rasterReplaceResolution = self.__rasterDetectLength
 
+        # clear fixPoint widget
+        self.__fixPointsWidget.clear()
+        self.__fixPointsWidget.blockTextEdit()
+
         # get geometry
-        geometryList=[]
+        featureList=[]
         selectedFeature=None
+        selectedGeometryYZ=None
+        currentSelectedGeometryID=None
         try:
             features = list(self.__splitLineLayer.selectedFeatures())
             selectedFeature = features[0]
             for featureIndex in range(0,10):
-                geometryList.append(features[featureIndex].geometry())
+                featureList.append(features[featureIndex])
         except:
-            print("select" + str(len(geometryList)))
+            print("select" + str(len(featureList)))
         
         # start plotting
 
         # plot primary
-        if len(geometryList)>0:
-            # get geometryID
-            try:
-                self.__currentSelectedGeometryID = selectedFeature["id"]
-            except:
-                print("__reFreshPlotWidget get geometryID ")
-
-
+        if len(featureList)>0:
             # plot primary line
-            geometryValueList = self.__getRasterValuesYZ(geometryList[0])
+            geometryValueList = self.__getRasterValuesYZ(featureList[0].geometry())
             self.__plotClass.addDataPrimary(geometryValueList)
 
         # plot sbkCrossSection
+            self.__plotSBK(selectedFeature)
 
-            # add data to tableWidget and plot line
+        # plot fixPoint
+            # make geometryValueList to center 0(normolize)
+            normolizeVlaueList = self.__plotClass.dataNormalize(geometryValueList)
+            yList = normolizeVlaueList[0]
+            zList = normolizeVlaueList[1]
+
+            # detected from y=0 , find the higest point for each side
+            leftY = None
+            leftZ= -math.inf
+
+            rightY = None
+            rightZ = -math.inf
+            
+            for index in range(0 , len(yList)):#  point=[y,z]
+                if yList[index] < 0 and zList[index] > leftZ:
+                    leftY = yList[index]
+                    leftZ = zList[index]
+
+                elif yList[index] > 0 and zList[index] > rightZ:
+                    rightY = yList[index]
+                    rightZ = zList[index]
             try:
+
+
+                self.__fixPointsWidget.setLeftFixPointYZ(round(leftY,2) , round(leftZ,2))
+                self.__fixPointsWidget.setRightFixPointYZ(round(rightY,2) , round(rightZ,2))
+                self.__fixPointsWidget.plot()
+                self.__fixPointsWidget.unBlockTextEdit()
+            except:
+                traceback.print_exc()
+
+
+
+        # plot otherLine
+        if len(featureList)>1:
+
+            # plot line from hyDem raster
+            for index in range(1,len(featureList)):
+                
                 # parse json formate to data format
                 # data format : [[x1,y1],[x2,y2]....[xn,yn]]
-                yzLine = json.loads(selectedFeature["profile"]) 
+                yzLine = json.loads(featureList[index]["profile"]) 
 
                 # normalize the yzLine, to make centerX to 0
                 # data format : [[[x1,x2...xn] , [y1,y2.....yn]]]
                 yzLine = self.__plotClass.dataNormalize(yzLine)
 
-                # add to tableWidget
-                #-------------------------------------------------
-                verticeList = list(list(self.__splitLineLayer.selectedFeatures())[0].geometry().vertices())
-                
-                # add startPoint
-                startX = verticeList[0].x()
-                startY = verticeList[0].y()
-                startZ = self.__getRasterValue(startX , startY)
-                if startZ == self.__nullValue:
-                    startZ = 0.0
-
-                self.__tableClass.setStartPoint(startX , startY , startZ)
-
-                # add endPoint
-                endX = verticeList[-1].x()
-                endY = verticeList[-1].y()
-                endZ = self.__getRasterValue(endX , endY)
-                if startZ == self.__nullValue:
-                    endZ = 0.0
-
-                self.__tableClass.setEndPoint(endX , endY , endZ)
-
-                # add other points
-                yList = yzLine[0]
-                zList = yzLine[1]
-                
-                for index in range(0,len(yList)):
-                    self.__tableClass.addPoint(yList[index] , zList[index])
-
-                #reload table
-                self.__tableClass.reload()
-
-            except:
-                traceback.print_exc()
-                print("error table create faild")
-
-                
-
-            # set title
-            try:
-                 self.__plotClass.setTitle(self.__currentSelectedGeometryID)
-            except:
-                self.__plotClass.setTitle("no sbk selected")
-                
-
-        # plot otherLine
-        if len(geometryList)>1:
-
-            # plot line from hyDem raster
-            for index in range(1,len(geometryList)):
-                
-                # valueList from hyDEM which from splitLine
-                geometryValueList = self.__getRasterValuesYZ(geometryList[index])
-                self.__plotClass.addDataSecondary(geometryValueList)
+        # set title
+        try:
+            self.__plotClass.setTitle(selectedFeature["id"])
+        except:
+            self.__plotClass.setTitle("no sbk selected")
+        
 
         # plot on widget
         self.__plotClass.plotPrimary()
         self.__plotClass.plotSecondary()
+
+    # plot SBK
+    def __plotSBK(self , selectedFeature):
+        # add data to tableWidget and plot line
+        try:
+            # parse json formate to data format
+            # data format : [[x1,y1],[x2,y2]....[xn,yn]]
+            yzLine = json.loads(selectedFeature["profile"]) 
+
+            # normalize the yzLine, to make centerX to 0
+            # data format : [[[x1,x2...xn] , [y1,y2.....yn]]]
+            yzLine = self.__plotClass.dataNormalize(yzLine)
+
+            # add to tableWidget
+            #-------------------------------------------------
+            verticeList = list(selectedFeature.geometry().vertices())
+            
+            # add startPoint
+            startX = verticeList[0].x()
+            startY = verticeList[0].y()
+            startZ = self.__getRasterValue(startX , startY)
+            if startZ == self.__nullValue:
+                startZ = 0.0
+
+            self.__tableClass.setStartPoint(startX , startY , startZ)
+
+            # add endPoint
+            endX = verticeList[-1].x()
+            endY = verticeList[-1].y()
+            endZ = self.__getRasterValue(endX , endY)
+            if startZ == self.__nullValue:
+                endZ = 0.0
+
+            self.__tableClass.setEndPoint(endX , endY , endZ)
+
+            # add other points
+            yList = yzLine[0]
+            zList = yzLine[1]
+            
+            for index in range(0,len(yList)):
+                self.__tableClass.addPoint(yList[index] , zList[index])
+
+            #reload table
+            self.__tableClass.reload()
+
+        except:
+            traceback.print_exc()
+            print("error table create faild")
 
     # get Raster layer properties
     def __getRasterValuesYZ(self , geometry):

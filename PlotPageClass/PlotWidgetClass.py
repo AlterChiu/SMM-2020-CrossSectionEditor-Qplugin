@@ -1,6 +1,7 @@
 import pyqtgraph as pyqtgraph
 from pyqtgraph import PlotWidget, plot
 from PyQt5 import QtCore
+import traceback
 import statistics
 
 class PlotWidgetClass:
@@ -26,6 +27,8 @@ class PlotWidgetClass:
         }
         self.__plotWidget.setLabel('left', "Level(m)", **self.__labelStyle)
         self.__plotWidget.setLabel("bottom" , "Distance(m)" , **self.__labelStyle)
+
+
         
         # set line values
         # dataLine = [[[Vx1....Vxn] , [Vy1....Vyn] ], [[Wx1....Wxn],[Wy1....Wyn]].....]
@@ -33,9 +36,15 @@ class PlotWidgetClass:
         self.__dataLinePrimary = []
         self.__dataLineSBK = []
 
+        # set fixPoint => [y,z]
+        self.__dataRightFixPoint = []
+        self.__dataLeftFixPoint = []
+
         # plot line
         self.__primaryLine=None
         self.__sbkLine=None
+        self.__leftFixPoint=None
+        self.__rightFixPoint=None
 
     # public functions
     #--------------------------------------------------------------------------------------
@@ -43,6 +52,7 @@ class PlotWidgetClass:
         self.plotSecondary()
         self.plotPrimary()
         self.plotSBK()
+        self.plotFixPoints()
 
     def plotSBK(self):
         # SBK pen
@@ -81,6 +91,20 @@ class PlotWidgetClass:
             except:
                 print("plot secondary")
 
+    def plotFixPoints(self):
+        fixPointPen = pyqtgraph.mkPen(color="r")
+        try:
+            
+            # plot left point
+            self.__leftFixPoint = self.__plotWidget.plot( [self.__dataLeftFixPoint[0]], [self.__dataLeftFixPoint[1]]  ,pen = fixPointPen , symbol="+" , symbolSize=30, symbolBrush=("r"))
+        
+            # plot left point
+            self.__rightFixPoint = self.__plotWidget.plot( [self.__dataRightFixPoint[0]], [self.__dataRightFixPoint[1]]  ,pen = fixPointPen , symbol="+" , symbolSize=30, symbolBrush=("r"))
+        
+        except:
+            traceback.print_exc()
+            print("plot FixPoint")
+
     def rePlotPrimary(self , valueList:list):
         self.clearPrimaryLine()
         self.addDataPrimary(valueList)
@@ -98,8 +122,29 @@ class PlotWidgetClass:
         self.__dataLineList.clear()
         self.__dataLinePrimary.clear()
         self.__dataLineSBK.clear()
+        self.__dataLeftFixPoint.clear()
+        self.__dataRightFixPoint.clear()
         self.__plotWidget.clear()
     
+    def clearFixPoint(self):
+        try:
+            self.__dataLeftFixPoint.clear()
+            self.__dataRightFixPoint.clear()
+        except:
+            print("no FixPoint data to clear")
+
+        self.__dataLeftFixPoint = []
+        self.__dataRightFixPoint = []
+
+        try:
+            self.__leftFixPoint.clear()
+            self.__rightFixPoint.clear()
+        except:
+            pass
+
+        self.__leftFixPoint = None
+        self.__rightFixPoint = None
+
     def clearSbkLine(self):
         try:
             self.__sbkLine.clear()    
@@ -195,6 +240,30 @@ class PlotWidgetClass:
 
         return [temptXList , temptYList] #return = [[x1...xn] , [y1....yn]]
     
+    # set fixed point
+    def setRightFixPoint(self , y:float , z:float)->bool:
+        try:
+            translatedY = float(y)
+            translatedZ = float(z)
+
+            self.__dataRightFixPoint = [y ,z]
+            return True
+        except:
+            print("rightFixPoint convert exception")
+            return False
+
+    def setLeftFixPoint(self , y:float , z:float)->bool:
+        try:
+            translatedY = float(y)
+            translatedZ = float(z)
+
+            self.__dataLeftFixPoint = [y ,z]
+            return True
+        except:
+            print("leftFixPoint convert exception")
+            return False
+
+
 
     # set title
     def setTitle(self , titleID=""):
