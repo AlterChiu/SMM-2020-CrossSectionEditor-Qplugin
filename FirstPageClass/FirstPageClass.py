@@ -106,10 +106,17 @@ class FirstPageClass:
                 for feature in temptJson["features"]:
                     temptGeometryPoints = feature["geometry"]["coordinates"]
                     
-                    # outList
+                    # outList, add a buffer to start-end point (each side for 3m)
                     outGeometryPoints =[]
-                    outGeometryPoints.append(temptGeometryPoints[0])
-                    outGeometryPoints.append(temptGeometryPoints[-1])
+                    startPoint = temptGeometryPoints[0]
+                    endPoint = temptGeometryPoints[-1]
+                    geometryLength = pow(pow(startPoint[0] - endPoint[0] ,2) + pow(startPoint[1] - endPoint[1] ,2),0.5)
+
+                    startDirection = [(startPoint[0]-endPoint[0])*(3.0/geometryLength) , (startPoint[1]-endPoint[1])*(3.0/geometryLength)]
+                    endDirection = [startDirection[0]*-1 , startDirection[1]*-1]
+
+                    outGeometryPoints.append([startPoint[0]+startDirection[0] , startPoint[1]+startDirection[1]])
+                    outGeometryPoints.append([endPoint[0]+endDirection[0] , endPoint[1]+endDirection[1]])
                     feature["geometry"]["coordinates"] = outGeometryPoints
 
                     # remove not necessary feild

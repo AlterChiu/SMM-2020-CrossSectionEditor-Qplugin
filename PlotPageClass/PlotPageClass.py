@@ -180,16 +180,20 @@ class PlotPageClass:
             # create output profile
             outProfile = []
 
-            # add start point
-            outProfile.append([-1*maxLength/2 , startPoint[2]])
+            # get fixPoints
+            leftFixPoint = self.__fixPointsWidget.getLeftFixPoint()# [y,z] 
+            rightFixPoint = self.__fixPointsWidget.getRightFixPoint()# [y,z] 
+
+            # add left fix(boundary) point
+            outProfile.append(leftFixPoint)
 
             # add other points which within the boundary
             for rowData in tableData: #[x,y,l,z]
-                if abs(rowData[2] < maxLength/2):
+                if rowData[2]> leftFixPoint[0] and rowData[2]<rightFixPoint[0]:
                     outProfile.append([rowData[2] , rowData[3]])
 
             # add end point
-            outProfile.append([maxLength/2  , endPoint[2]])
+            outProfile.append(rightFixPoint)
 
             # update to rest-api (patch)
             data = {"startPoint":startPoint,"endPoint":endPoint,"profile":outProfile}
@@ -488,7 +492,7 @@ class PlotPageClass:
 
     def __getRasterValue(self , x:float , y:float)->float:
         try:
-            res = self.__demLayer.dataProvider().identify(QgsPointXY(x , y), QgsRaster.IdentifyFormatValue).results()  
+            res = self.__demLayer.dataProvider().identify(QgsPointXY(x , y), QgsRaster.IdentifyFormatValue).results()
             return res[1]
         except:
             return self.__nullValue

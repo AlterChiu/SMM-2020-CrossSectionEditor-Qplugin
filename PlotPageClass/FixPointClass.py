@@ -74,7 +74,6 @@ class FixPointClass:
     def getLeftFixPoint(self)->list: # [y,z]
         return [self.__leftFixPointY.text() , self.__leftFixPointZ.text()]
 
-
     def clear(self):
         self.__rightFixPointY.setText("")
         self.__rightFixPointZ.setText("")
