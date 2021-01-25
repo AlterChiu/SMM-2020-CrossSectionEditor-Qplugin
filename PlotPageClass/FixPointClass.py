@@ -34,8 +34,6 @@ class FixPointClass:
         self.__rightFixPointZ.setValidator(self.__validator)
         self.__rightFixPointZ.returnPressed.connect(lambda:self.plot())
 
-
-
     def setLeftFixPointYZ(self , y:float , z:float):
         try:
             self.__leftFixPointY.setText(str(y))
@@ -80,14 +78,11 @@ class FixPointClass:
         self.__leftFixPointY.setText("")
         self.__leftFixPointZ.setText("")
         
-
     def blockTextEdit(self):
         self.__leftFixPointY.setEnabled(False)
         self.__leftFixPointZ.setEnabled(False)
         self.__rightFixPointY.setEnabled(False)
         self.__rightFixPointZ.setEnabled(False)
-
-
 
     def unBlockTextEdit(self):
         self.__leftFixPointY.setEnabled(True)
