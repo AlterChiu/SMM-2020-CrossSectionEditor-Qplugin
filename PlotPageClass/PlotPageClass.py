@@ -257,6 +257,10 @@ class PlotPageClass:
         self.__reFreshPlotWidget()
 
     def __replace(self, resolution: float):
+        
+        #test
+        print("trigger replace")
+        
         try:
             features = list(self.__splitLineLayer.selectedFeatures())
             xyzList = self.__getRasterValuesXYZ(
@@ -535,46 +539,49 @@ class PlotPageClass:
             }
             header = {"content-type": "application/json"}
             request = requests.post(
-                "https://h2-demo.pointing.tw/service/dem/profile?resolution=1", data=json.dumps(pointJson), headers=header)
+                "https://h2-demo.pointing.tw/service/dem/profile?resolution=1", data=json.dumps(pointJson), headers=header, timeout=3)
 
-            # request jsonObject
-            requestJson = json.loads(request.text)
+            if request.status_code == requests.codes.ok:
 
-            # classify request by dy(key) and z(value list)
-            yzList = {}
-            for point in requestJson["profile"]:
-                multiple = (int)(point["dy"]/resolution)
-                temptList = yzList.get(multiple, [])
-                temptList.append(point["z"])
-                yzList[multiple] = temptList
+                # request jsonObject
+                requestJson = json.loads(request.text)
 
-            # make yzList to output format [{x,y,dy,z}]
-            outList = []
+                # classify request by dy(key) and z(value list)
+                yzList = {}
+                for point in requestJson["profile"]:
+                    multiple = (int)(point["dy"]/resolution)
+                    temptList = yzList.get(multiple, [])
+                    temptList.append(point["z"])
+                    yzList[multiple] = temptList
 
-            # add startPoint
-            outList.append(requestJson["profile"][0])
+                # make yzList to output format [{x,y,dy,z}]
+                outList = []
 
-            # make classified yzList to mean value
-            for key in yzList.keys():
-                try:
-                    sumValue = sum(yzList[key])
-                    meanValue = sumValue/len(yzList[key])
-                    temptX = startPoint[0] + disX*(key*resolution/length)
-                    temptY = startPoint[1] + disY*(key*resolution/length)
-                    temptDY = resolution*key
+                # add startPoint
+                outList.append(requestJson["profile"][0])
 
-                    outList.append({"x": temptX, "y": temptY,
-                                    "dy": temptDY, "z": meanValue})
-                    print({"x": temptX, "y": temptY,
-                                    "dy": temptDY, "z": meanValue})
-                except:
-                    traceback.print_exc()
-                    pass
+                # make classified yzList to mean value
+                for key in yzList.keys():
+                    try:
+                        sumValue = sum(yzList[key])
+                        meanValue = sumValue/len(yzList[key])
+                        temptX = startPoint[0] + disX*(key*resolution/length)
+                        temptY = startPoint[1] + disY*(key*resolution/length)
+                        temptDY = resolution*key
 
-            # add endPoint
-            outList.append(requestJson["profile"][-1])
+                        outList.append({"x": temptX, "y": temptY,
+                                        "dy": temptDY, "z": meanValue})
+                    except:
+                        traceback.print_exc()
+                        pass
 
-            return outList
+                # add endPoint
+                outList.append(requestJson["profile"][-1])
+
+                return outList
+            else:
+                print("get dem level request faild")
+                return [{"x": 0, "y": 0, "dy": 0, "z": 0}]
         except:
             # return empty json format
             traceback.print_exc()
@@ -593,15 +600,22 @@ class PlotPageClass:
             "type": "point", "coordinates": [x, y]
         }
         header = {"content-type": "application/json"}
-        request = requests.post(
-            "https://h2-demo.pointing.tw/service/dem/profile?resolution=1", data=json.dumps(pointJson), headers=header)
-        requestJson = json.loads(request.text)
 
-        return requestJson["profile"][0]["z"]
+        request = None
+        try:
+            request = requests.post(
+                "https://h2-demo.pointing.tw/service/dem/profile?resolution=1", data=json.dumps(pointJson), headers=header, timeout=3)
+            requestJson = json.loads(request.text)
+
+            if request.status_code == requests.codes.ok:
+                return requestJson["profile"][0]["z"]
+            else:
+                return 0
+        except:
+            return 0
 
     # -------------------------------------READ RASTER PIXEL FROM FROM DEMLAYER----------------------------------
     # def __getRasterSize(self):
     #   pixelX = self.__demLayer.rasterUnitsPerPixelX()
-    #  pixelY = self.__demLayer.rasterUnitsPerPixelY()
-
-    #    return math.sqrt(pow(pixelX, 2) + pow(pixelY, 2))
+    #   pixelY = self.__demLayer.rasterUnitsPerPixelY()
+    #   return math.sqrt(pow(pixelX, 2) + pow(pixelY, 2))

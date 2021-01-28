@@ -51,6 +51,12 @@
    <property name="text">
     <string>replace</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+R</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="saveButton">
    <property name="geometry">
@@ -72,6 +78,12 @@
    <property name="text">
     <string>Save</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="restoreButton">
    <property name="geometry">
@@ -92,6 +104,12 @@
    </property>
    <property name="text">
     <string>Restore</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Z</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QTableWidget" name="editTableWidget">
@@ -277,6 +295,9 @@
     <property name="text">
      <string>-</string>
     </property>
+    <property name="autoDefault">
+     <bool>false</bool>
+    </property>
    </widget>
    <widget class="QPushButton" name="zoomInButton">
     <property name="geometry">
@@ -301,6 +322,9 @@
     <property name="text">
      <string>+</string>
     </property>
+    <property name="autoDefault">
+     <bool>false</bool>
+    </property>
    </widget>
   </widget>
   <widget class="QPushButton" name="moveUpButton">
@@ -323,6 +347,12 @@
    <property name="text">
     <string>↑</string>
    </property>
+   <property name="shortcut">
+    <string>Up</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="moveLeftButton">
    <property name="geometry">
@@ -343,6 +373,12 @@
    </property>
    <property name="text">
     <string>←</string>
+   </property>
+   <property name="shortcut">
+    <string>Left</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="moveRightButton">
@@ -365,6 +401,12 @@
    <property name="text">
     <string>→</string>
    </property>
+   <property name="shortcut">
+    <string>Right</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="moveDownButton">
    <property name="geometry">
@@ -385,6 +427,12 @@
    </property>
    <property name="text">
     <string>↓</string>
+   </property>
+   <property name="shortcut">
+    <string>Down</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="addRowButton">
@@ -407,6 +455,12 @@
    <property name="text">
     <string>addRow</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+A</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="deleteRowButton">
    <property name="geometry">
@@ -427,6 +481,12 @@
    </property>
    <property name="text">
     <string>deleteRow</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+D</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="ratioRightOutButton">
@@ -449,6 +509,9 @@
    <property name="text">
     <string>»</string>
    </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="ratioRightInButton">
    <property name="geometry">
@@ -470,6 +533,9 @@
    <property name="text">
     <string>«</string>
    </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="ratioBottomOutButton">
    <property name="geometry">
@@ -490,6 +556,9 @@
    </property>
    <property name="text">
     <string>︾</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="ratioBottomInButton">
@@ -518,6 +587,9 @@
    <property name="text">
     <string>︽</string>
    </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="ratioLeftOutButton">
    <property name="geometry">
@@ -538,6 +610,9 @@
    </property>
    <property name="text">
     <string>«</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="ratioLeftInButton">
@@ -560,6 +635,9 @@
    <property name="text">
     <string>»</string>
    </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="ratioTopOutButton">
    <property name="geometry">
@@ -580,6 +658,9 @@
    </property>
    <property name="text">
     <string>︽</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="ratioTopInButton">
@@ -602,6 +683,9 @@
    <property name="text">
     <string>︾</string>
    </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="moveLeftOutButton">
    <property name="geometry">
@@ -622,6 +706,9 @@
    </property>
    <property name="text">
     <string>←</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="moveRightInButton">
@@ -644,6 +731,9 @@
    <property name="text">
     <string>←</string>
    </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="moveLeftInButton">
    <property name="geometry">
@@ -665,6 +755,9 @@
    <property name="text">
     <string>→</string>
    </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="moveRightOutButton">
    <property name="geometry">
@@ -685,6 +778,9 @@
    </property>
    <property name="text">
     <string>→</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="moveBottomInButton">
@@ -713,6 +809,9 @@
    <property name="text">
     <string>↑</string>
    </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="moveBottomOutButton">
    <property name="geometry">
@@ -733,6 +832,9 @@
    </property>
    <property name="text">
     <string>↓</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="moveTopOutButton">
@@ -755,6 +857,9 @@
    <property name="text">
     <string>↑</string>
    </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="moveTopInButton">
    <property name="geometry">
@@ -775,6 +880,9 @@
    </property>
    <property name="text">
     <string>↓</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="replaceResolutionUpButton">
@@ -797,6 +905,15 @@
    <property name="text">
     <string>↑</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl++</string>
+   </property>
+   <property name="autoRepeatDelay">
+    <number>1000</number>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="replaceResolutionDownButton">
    <property name="geometry">
@@ -817,6 +934,15 @@
    </property>
    <property name="text">
     <string>↓</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+-</string>
+   </property>
+   <property name="autoRepeatDelay">
+    <number>1000</number>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QLabel" name="label">
