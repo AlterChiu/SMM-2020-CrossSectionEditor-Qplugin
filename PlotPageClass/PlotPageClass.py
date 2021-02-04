@@ -223,10 +223,11 @@ class PlotPageClass:
 
             # add left fix(boundary) point
             outProfile.append(leftFixPoint)
+            print(leftFixPoint)
 
             # add other points which within the boundary
             for rowData in tableData:  # [x,y,l,z]
-                if rowData[2] > leftFixPoint[0] and rowData[2] < rightFixPoint[0]:
+                if rowData[2] > float(leftFixPoint[0]) and rowData[2] < float(rightFixPoint[0]):
                     outProfile.append([rowData[2], rowData[3]])
 
             # add end point
@@ -614,6 +615,11 @@ class PlotPageClass:
         except:
             return 0
 
+        
+                
+        
+        
+    
     # -------------------------------------READ RASTER PIXEL FROM FROM DEMLAYER----------------------------------
     # def __getRasterSize(self):
     #   pixelX = self.__demLayer.rasterUnitsPerPixelX()
