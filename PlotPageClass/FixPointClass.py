@@ -4,9 +4,10 @@ from PyQt5.QtWidgets import QApplication, QLineEdit
 from PyQt5.QtGui import QDoubleValidator
 import pyqtgraph as pyqtgraph
 
+import sys
 import traceback
 
-from .PlotWidgetClass import PlotWidgetClass
+from .PlotWidget.PlotWidgetClass import PlotWidgetClass
 
 
 class FixPointClass:

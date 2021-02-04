@@ -7,7 +7,7 @@ import traceback
 import sys
 import math
 
-from .PlotWidgetClass import PlotWidgetClass
+from ..PlotPageClass import PlotWidgetClass
 
 
 class TableWidgeClass:

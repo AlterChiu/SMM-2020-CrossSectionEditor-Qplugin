@@ -16,9 +16,11 @@ import sys
 import requests
 
 # userCreate py
-from .PlotWidgetClass import PlotWidgetClass
-from .TableWidgeClass import TableWidgeClass
+from .PlotWidget.PlotWidgetClass import PlotWidgetClass
+from .TableWidget.TableWidgeClass import TableWidgeClass
 from .FixPointClass import FixPointClass
+
+from .ApiRequest.DemLevel import DemLevel
 
 import traceback
 
@@ -193,78 +195,17 @@ class PlotPageClass:
 
     # dialog functions
     # -----------------------------------------------------------
-    def __save(self):
-
-        try:
-            # get selected feature
-            selectedFeature = list(self.__splitLineLayer.selectedFeatures())[0]
-            featureID = selectedFeature["id"]
-
-            # get table data
-            tableData = self.__tableClass.getTableValues()
-
-            # get startPoint and endPoint, [x,y,z]
-            startPoint = self.__tableClass.getStartPoint()
-            startPoint[2] = self.__getPointZValue(startPoint[0], startPoint[1])
-
-            endPoint = self.__tableClass.getEndPoint()
-            endPoint[2] = self.__getPointZValue(endPoint[0], endPoint[1])
-
-            # get boundary length
-            maxLength = math.sqrt(
-                pow(startPoint[0] - endPoint[0], 2) + pow(startPoint[1] - endPoint[1], 2))
-
-            # create output profile
-            outProfile = []
-
-            # get fixPoints
-            leftFixPoint = self.__fixPointsWidget.getLeftFixPoint()  # [y,z]
-            rightFixPoint = self.__fixPointsWidget.getRightFixPoint()  # [y,z]
-
-            # add left fix(boundary) point
-            outProfile.append(leftFixPoint)
-            print(leftFixPoint)
-
-            # add other points which within the boundary
-            for rowData in tableData:  # [x,y,l,z]
-                if rowData[2] > float(leftFixPoint[0]) and rowData[2] < float(rightFixPoint[0]):
-                    outProfile.append([rowData[2], rowData[3]])
-
-            # add end point
-            outProfile.append(rightFixPoint)
-
-            # update to rest-api (patch)
-            data = {"startPoint": startPoint,
-                    "endPoint": endPoint, "profile": outProfile}
-            header = {"content-type": "application/json"}
-            request = requests.patch("https://h2-demo.pointing.tw/api/cross-sections/" +
-                                     self.__editCounty + "/" + featureID, data=json.dumps(data), headers=header)
-            print(request.text)
-
-            # new id
-            newID = "X" + str(int((startPoint[0] + endPoint[0])/2)) + \
-                "-Y" + str(int((startPoint[1] + endPoint[1])/2))
-
-            # commit to layer
-            selectedFeature["id"] = newID
-            selectedFeature["profile"] = str(outProfile)
-            self.__splitLineLayer.updateFeature(selectedFeature)
-
-        except:
-            traceback.print_exc()
-            Exception("save error")
-
     def __restore(self):
         self.__reFreshPlotWidget()
 
     def __replace(self, resolution: float):
-        
-        #test
+
+        # test
         print("trigger replace")
-        
+
         try:
             features = list(self.__splitLineLayer.selectedFeatures())
-            xyzList = self.__getRasterValuesXYZ(
+            xyzList = DemLevel.getRasterValuesXYZ(
                 features[0].geometry(), resolution=resolution)
             self.__tableClass.replace(xyzList)
         except:
@@ -357,16 +298,43 @@ class PlotPageClass:
             self.__rasterReplaceResolution = self.__rasterReplaceResolution - 1
         self.__replace(resolution=self.__rasterReplaceResolution)
 
+    def __save(self):
+        try:
+            # get selected feature
+            selectedFeature = list(self.__splitLineLayer.selectedFeatures())[0]
+            featureID = selectedFeature["id"]
+
+            # get table data
+            tableData = self.__tableClass.getTableValues()
+
+            # get startPoint and endPoint, [x,y,z]
+            startPoint = self.__tableClass.getStartPoint()
+            endPoint = self.__tableClass.getEndPoint()
+
+            # get fixPoints
+            leftFixPoint = self.__fixPointsWidget.getLeftFixPoint()  # [y,z]
+            rightFixPoint = self.__fixPointsWidget.getRightFixPoint()  # [y,z]
+
+            # save
+            updateDate = {
+                "id": featureID,
+                "tableDate": tableData,
+                "startPoint": startPoint,
+                "endPoint": endPoint,
+                "leftFixPoint": leftFixPoint,
+                "rightFixPoint": rightFixPoint
+            }
+            Update.crossSection(updateDate)
+
+        except:
+            traceback.print_exc()
+
     # plot widget
     # ------------------------------------------------------------
+
     def __reFreshPlotWidget(self):
         # clear plot widge
-        self.__plotClass.clear()
-        self.__rasterReplaceResolution = self.__rasterDetectLength
-
-        # clear fixPoint widget
-        self.__fixPointsWidget.clear()
-        self.__fixPointsWidget.blockTextEdit()
+        self.__clearPlotPage()
 
         # get geometry
         featureList = []
@@ -382,11 +350,9 @@ class PlotPageClass:
             print("select" + str(len(featureList)))
 
         # start plotting
-
-        # plot primary
         if len(featureList) > 0:
             # plot primary line
-            geometryValueList = self.__getRasterValuesYZ(
+            geometryValueList = DemLevel.getRasterValuesYZ(
                 featureList[0].geometry(), self.__rasterReplaceResolution)
             self.__plotClass.addDataPrimary(geometryValueList)
 
@@ -394,37 +360,7 @@ class PlotPageClass:
             self.__plotSBK(selectedFeature)
 
         # plot fixPoint
-            # make geometryValueList to center 0(normolize)
-            normolizeVlaueList = self.__plotClass.dataNormalize(
-                geometryValueList)
-            yList = normolizeVlaueList[0]
-            zList = normolizeVlaueList[1]
-
-            # detected from y=0 , find the higest point for each side
-            leftY = None
-            leftZ = -math.inf
-
-            rightY = None
-            rightZ = -math.inf
-
-            for index in range(0, len(yList)):  # point=[y,z]
-                if yList[index] < 0 and zList[index] > leftZ:
-                    leftY = yList[index]
-                    leftZ = zList[index]
-
-                elif yList[index] > 0 and zList[index] > rightZ:
-                    rightY = yList[index]
-                    rightZ = zList[index]
-            try:
-
-                self.__fixPointsWidget.setLeftFixPointYZ(
-                    round(leftY, 2), round(leftZ, 2))
-                self.__fixPointsWidget.setRightFixPointYZ(
-                    round(rightY, 2), round(rightZ, 2))
-                self.__fixPointsWidget.plot()
-                self.__fixPointsWidget.unBlockTextEdit()
-            except:
-                traceback.print_exc()
+            self.__plotFixPoint(geometryValueList)
 
         # plot otherLine
         if len(featureList) > 1:
@@ -469,7 +405,7 @@ class PlotPageClass:
             # add startPoint
             startX = verticeList[0].x()
             startY = verticeList[0].y()
-            startZ = self.__getPointZValue(startX, startY)
+            startZ = DemLevel.getPointZValue(startX, startY)
             if startZ == self.__nullValue:
                 startZ = 0.0
 
@@ -478,7 +414,7 @@ class PlotPageClass:
             # add endPoint
             endX = verticeList[-1].x()
             endY = verticeList[-1].y()
-            endZ = self.__getPointZValue(endX, endY)
+            endZ = DemLevel.getPointZValue(endX, endY)
             if startZ == self.__nullValue:
                 endZ = 0.0
 
@@ -498,96 +434,6 @@ class PlotPageClass:
             traceback.print_exc()
             print("error table create faild")
 
-    # get Raster layer properties
-    def __getRasterValuesYZ(self, geometry, resolution: float) -> list:
-
-        requestPoints = self.__getRasterValue(geometry, resolution)
-        outList = []
-
-        for point in requestPoints:
-            outList.append([point["dy"], point["z"]])
-
-        return outList
-
-    # get Raster layer properties
-    def __getRasterValuesXYZ(self, geometry, resolution: float):
-
-        requestPoints = self.__getRasterValue(geometry, resolution)
-        outList = []
-
-        for point in requestPoints:
-            outList.append([point["x"], point["y"], point["z"]])
-
-        return outList
-
-    # return api request profile = profile:[{x,y,dy,z}....]
-    def __getRasterValue(self, geometry, resolution: float) -> list:
-
-        # get vertice from geometry
-        temptVertices = list(geometry.vertices())
-        startPoint = [temptVertices[0].x(), temptVertices[0].y()]
-        endPoint = [temptVertices[-1].x(), temptVertices[-1].y()]
-
-        length = pow(pow(startPoint[0] - endPoint[0], 2) +
-                     pow(startPoint[1] - endPoint[1], 2), 0.5)
-        disX = endPoint[0] - startPoint[0]
-        disY = endPoint[1] - startPoint[1]
-
-        # create api request parameters
-        try:
-            pointJson = {
-                "type": "Lintstring", "coordinates": [startPoint, endPoint]
-            }
-            header = {"content-type": "application/json"}
-            request = requests.post(
-                "https://h2-demo.pointing.tw/service/dem/profile?resolution=1", data=json.dumps(pointJson), headers=header, timeout=3)
-
-            if request.status_code == requests.codes.ok:
-
-                # request jsonObject
-                requestJson = json.loads(request.text)
-
-                # classify request by dy(key) and z(value list)
-                yzList = {}
-                for point in requestJson["profile"]:
-                    multiple = (int)(point["dy"]/resolution)
-                    temptList = yzList.get(multiple, [])
-                    temptList.append(point["z"])
-                    yzList[multiple] = temptList
-
-                # make yzList to output format [{x,y,dy,z}]
-                outList = []
-
-                # add startPoint
-                outList.append(requestJson["profile"][0])
-
-                # make classified yzList to mean value
-                for key in yzList.keys():
-                    try:
-                        sumValue = sum(yzList[key])
-                        meanValue = sumValue/len(yzList[key])
-                        temptX = startPoint[0] + disX*(key*resolution/length)
-                        temptY = startPoint[1] + disY*(key*resolution/length)
-                        temptDY = resolution*key
-
-                        outList.append({"x": temptX, "y": temptY,
-                                        "dy": temptDY, "z": meanValue})
-                    except:
-                        traceback.print_exc()
-                        pass
-
-                # add endPoint
-                outList.append(requestJson["profile"][-1])
-
-                return outList
-            else:
-                print("get dem level request faild")
-                return [{"x": 0, "y": 0, "dy": 0, "z": 0}]
-        except:
-            # return empty json format
-            traceback.print_exc()
-            return [{"x": 0, "y": 0, "dy": 0, "z": 0}]
-
         # -----------------------------------READ RASTER VALUE FROM DEMLAYER------------------------------------
         # try:
         # res = self.__demLayer.dataProvider().identify(QgsPointXY(x , y), QgsRaster.IdentifyFormatValue).results()
@@ -595,31 +441,48 @@ class PlotPageClass:
         # except:
         # return self.__nullValue
 
-    def __getPointZValue(self, x, y):
+    # plot fixPoint
+    def __plotFixPoint(self, geometryValueList):
+        normolizeVlaueList = self.__plotClass.dataNormalize(
+            geometryValueList)
+        yList = normolizeVlaueList[0]
+        zList = normolizeVlaueList[1]
 
-        pointJson = {
-            "type": "point", "coordinates": [x, y]
-        }
-        header = {"content-type": "application/json"}
+        # detected from y=0 , find the higest point for each side
+        leftY = None
+        leftZ = -math.inf
 
-        request = None
+        rightY = None
+        rightZ = -math.inf
+
+        for index in range(0, len(yList)):  # point=[y,z]
+            if yList[index] < 0 and zList[index] > leftZ:
+                leftY = yList[index]
+                leftZ = zList[index]
+
+            elif yList[index] > 0 and zList[index] > rightZ:
+                rightY = yList[index]
+                rightZ = zList[index]
         try:
-            request = requests.post(
-                "https://h2-demo.pointing.tw/service/dem/profile?resolution=1", data=json.dumps(pointJson), headers=header, timeout=3)
-            requestJson = json.loads(request.text)
 
-            if request.status_code == requests.codes.ok:
-                return requestJson["profile"][0]["z"]
-            else:
-                return 0
+            self.__fixPointsWidget.setLeftFixPointYZ(
+                round(leftY, 2), round(leftZ, 2))
+            self.__fixPointsWidget.setRightFixPointYZ(
+                round(rightY, 2), round(rightZ, 2))
+            self.__fixPointsWidget.plot()
+            self.__fixPointsWidget.unBlockTextEdit()
         except:
-            return 0
+            traceback.print_exc()
 
-        
-                
-        
-        
-    
+    # clear plotPage
+    def __clearPlotPage(self):
+        self.__plotClass.clear()
+        self.__rasterReplaceResolution = self.__rasterDetectLength
+
+        # clear fixPoint widget
+        self.__fixPointsWidget.clear()
+        self.__fixPointsWidget.blockTextEdit()
+
     # -------------------------------------READ RASTER PIXEL FROM FROM DEMLAYER----------------------------------
     # def __getRasterSize(self):
     #   pixelX = self.__demLayer.rasterUnitsPerPixelX()
