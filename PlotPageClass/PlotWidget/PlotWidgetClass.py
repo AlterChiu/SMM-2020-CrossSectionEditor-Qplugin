@@ -32,27 +32,46 @@ class PlotWidgetClass:
 
         # set line values
         # dataLine = [[[Vx1....Vxn] , [Vy1....Vyn] ], [[Wx1....Wxn],[Wy1....Wyn]].....]
-        self.__dataLineList = []
-        self.__dataLinePrimary = []
-        self.__dataLineSBK = []
+        self.__data = {
+            "primary": [],
+            "seconds": [],
+            "sbk": [],
+            "fixPoint": {
+                "dem": {
+                    "right": [],  # [y,z]
+                    "left": []  # [y,z]
+                },
+                "sbk": {
+                    "rigth": [],  # [y,z]
+                    "left": []  # [y,z]
+                }
+            }
+        }
 
-        # set fixPoint => [y,z]
-        self.__dataRightFixPoint = []
-        self.__dataLeftFixPoint = []
-
-        # plot line
-        self.__primaryLine = None
-        self.__sbkLine = None
-        self.__leftFixPoint = None
-        self.__rightFixPoint = None
+        self.__line = {
+            "primary": None,
+            "sbk": None,
+            "fixPoint": {
+                "dem": {
+                    "right": None,
+                    "left": None
+                },
+                "sbk": {
+                    "right": None,
+                    "left": None
+                }
+            }
+        }
 
     # public functions
     # --------------------------------------------------------------------------------------
+
     def plot(self):
         self.plotSecondary()
         self.plotPrimary()
         self.plotSBK()
-        self.plotFixPoints()
+        self.plotDemFixPoints()
+        self.plotSbkFixPoints()
 
     def plotSBK(self):
         # SBK pen
@@ -60,9 +79,9 @@ class PlotWidgetClass:
 
         # plot SBK line
         try:
-            temptXList = self.__dataLineSBK[0][0]
-            temptYList = self.__dataLineSBK[0][1]
-            self.__sbkLine = self.__plotWidget.plot(
+            temptXList = self.__data["sbk"][0][0]
+            temptYList = self.__data["sbk"][0][1]
+            self.__line["sbk"] = self.__plotWidget.plot(
                 temptXList, temptYList, pen=sbkPen)
         except:
             print("error plotSBK")
@@ -73,9 +92,9 @@ class PlotWidgetClass:
 
         # plot primary line
         try:
-            temptXList = self.__dataLinePrimary[0][0]
-            temptYList = self.__dataLinePrimary[0][1]
-            self.__primaryLine = self.__plotWidget.plot(
+            temptXList = self.__data["primary"][0][0]
+            temptYList = self.__data["primary"][0][1]
+            self.__line["primary"] = self.__plotWidget.plot(
                 temptXList, temptYList, pen=primaryPen)
         except:
             print("plot primary")
@@ -85,7 +104,7 @@ class PlotWidgetClass:
         secondPen = pyqtgraph.mkPen(color="g")
 
         # plot secondary lines
-        for dataLine in self.__dataLineList:
+        for dataLine in self.__data["seconds"]:
             try:
                 temptXList = dataLine[0]
                 temptYList = dataLine[1]
@@ -93,17 +112,33 @@ class PlotWidgetClass:
             except:
                 print("plot secondary")
 
-    def plotFixPoints(self):
+    def plotDemFixPoints(self):
         fixPointPen = pyqtgraph.mkPen(color="r")
         try:
 
             # plot left point
-            self.__leftFixPoint = self.__plotWidget.plot([self.__dataLeftFixPoint[0]], [
-                                                         self.__dataLeftFixPoint[1]], pen=fixPointPen, symbol="+", symbolSize=30, symbolBrush=("r"))
+            self.__line["fixPoint"]["dem"]["left"] = self.__plotWidget.plot([self.__data["fixPoint"]["dem"]["left"][0]], [
+                self.__data["fixPoint"]["dem"]["left"][1]], pen=fixPointPen, symbol=".", symbolSize=15, symbolBrush=("r"))
 
             # plot left point
-            self.__rightFixPoint = self.__plotWidget.plot([self.__dataRightFixPoint[0]], [
-                                                          self.__dataRightFixPoint[1]], pen=fixPointPen, symbol="+", symbolSize=30, symbolBrush=("r"))
+            self.__rightDemFixPoint = self.__plotWidget.plot([self.__data["fixPoint"]["dem"]["right"][0]], [
+                self.__data["fixPoint"]["dem"]["right"][1]], pen=fixPointPen, symbol=".", symbolSize=15, symbolBrush=("r"))
+
+        except:
+            traceback.print_exc()
+            print("plot FixPoint")
+
+    def plotSbkFixPoints(self):
+        fixPointPen = pyqtgraph.mkPen(color="b")
+        try:
+
+            # plot left point
+            self.__line["fixPoint"]["sbk"]["left"] = self.__plotWidget.plot([self.__data["fixPoint"]["sbk"]["left"][0]], [
+                self.__data["fixPoint"]["sbk"]["left"][1]], pen=fixPointPen, symbol=".", symbolSize=15, symbolBrush=("b"))
+
+            # plot left point
+            self.__rightSbkFixPoint = self.__plotWidget.plot([self.__data["fixPoint"]["sbk"]["right"][0]], [
+                self.__data["fixPoint"]["sbk"]["right"][1]], pen=fixPointPen, symbol=".", symbolSize=15, symbolBrush=("b"))
 
         except:
             traceback.print_exc()
@@ -129,44 +164,68 @@ class PlotWidgetClass:
         self.__plotWidget.clear()
 
     def clearFixPoint(self):
+
+        # dem fixPoint
+        # -----------------------------------------------------------
         try:
-            self.__plotWidget.removeItem(self.__leftFixPoint)
-            self.__leftFixPoint.clear()
+            self.__plotWidget.removeItem(
+                self.__line["fixPoint"]["dem"]["left"])
+            self.__line["fixPoint"]["dem"]["left"].clear()
         except:
             pass
 
         try:
-            self.__plotWidget.removeItem(self.__rightFixPoint)
-            self.__rightFixPoint.clear()
+            self.__plotWidget.removeItem(self.__rightDemFixPoint)
+            self.__rightDemFixPoint.clear()
         except:
             pass
 
-        self.__leftFixPoint = None
-        self.__rightFixPoint = None
-        self.__dataLeftFixPoint = []
-        self.__dataRightFixPoint = []
+        self.__line["fixPoint"]["dem"]["left"] = None
+        self.__rightDemFixPoint = None
+        self.__data["fixPoint"]["dem"]["left"] = []
+        self.__data["fixPoint"]["dem"]["right"] = []
+
+        # sbk fixPoint
+        # -----------------------------------------------------------
+        try:
+            self.__plotWidget.removeItem(
+                self.__line["fixPoint"]["sbk"]["left"])
+            self.__line["fixPoint"]["sbk"]["left"].clear()
+        except:
+            pass
+
+        try:
+            self.__plotWidget.removeItem(self.__rightSbkFixPoint)
+            self.__rightSbkFixPoint.clear()
+        except:
+            pass
+
+        self.__line["fixPoint"]["sbk"]["left"] = None
+        self.__rightSbkFixPoint = None
+        self.__data["fixPoint"]["sbk"]["left"] = []
+        self.__data["fixPoint"]["sbk"]["right"] = []
 
     def clearSbkLine(self):
         try:
-            self.__plotWidget.removeItem(self.__sbkLine)
+            self.__plotWidget.removeItem(self.__line["sbk"])
         except:
             print("no sbk data to clear")
 
-        self.__sbkLine = None
-        self.__dataLineSBK.clear()
+        self.__line["sbk"] = None
+        self.__data["sbk"].clear()
 
     def clearPrimaryLine(self):
         try:
-            self.__plotWidget.removeItem(self.__primaryLine)
+            self.__plotWidget.removeItem(self.__line["primary"])
         except:
             pass
 
-        self.__primaryLine = None
-        self.__dataLinePrimary.clear()
+        self.__line["primary"] = None
+        self.__data["primary"].clear()
 
     # valueList = [[x,y,z] , [x,y,z]]
     def addDataPrimary(self, valueList: list):
-        self.__addData(valueList, self.__dataLinePrimary)
+        self.__addData(valueList, self.__data["primary"])
 
     def addDataSBK(self, valueList: list):  # valueList = [[x,y] , [x,y]]
         # without data normalize
@@ -177,11 +236,11 @@ class PlotWidgetClass:
             temptXList.append(value[0])
             temptYList.append(value[1])
 
-        self.__dataLineSBK.append([temptXList, temptYList])
+        self.__data["sbk"].append([temptXList, temptYList])
 
     # valueList = [[x,y,z] , [x,y,z]]
     def addDataSecondary(self, valueList: list):
-        self.__addData(valueList, self.__dataLineList)
+        self.__addData(valueList, self.__data["seconds"])
 
     # add one more data to dataLine collection
     # valueList = [[x,y] , [x,y]]
@@ -249,29 +308,18 @@ class PlotWidgetClass:
 
         return [temptXList, temptYList]  # return = [[x1...xn] , [y1....yn]]
 
-    # set fixed point
-    def setRightFixPoint(self, y: float, z: float) -> bool:
+    # set fixed point, refixName for [dem , sbk] , leftRight for [right,left]
+    def setFixPoint(self, y: float, z: float, prefixName: str, leftRight: str) -> bool:
+
         try:
             translatedY = float(y)
             translatedZ = float(z)
 
-            self.__dataRightFixPoint = [y, z]
+            self.__data["fixPoint"][prefixName][leftRight] = [y, z]
             return True
         except:
-            print("rightFixPoint convert exception")
+            print("FixPoint convert exception " + prefixName + "_" + leftRight)
             return False
-
-    def setLeftFixPoint(self, y: float, z: float) -> bool:
-        try:
-            translatedY = float(y)
-            translatedZ = float(z)
-
-            self.__dataLeftFixPoint = [y, z]
-            return True
-        except:
-            print("leftFixPoint convert exception")
-            return False
-
     # set title
 
     def setTitle(self, titleID=""):

@@ -18,6 +18,7 @@ import requests
 # userCreate py
 from .PlotWidget.PlotWidgetClass import PlotWidgetClass
 from .TableWidget.TableWidgeClass import TableWidgeClass
+from .ModifyButton.ModifyButton import ModifyButtonClass
 from .FixPointClass import FixPointClass
 
 from .ApiRequest.DemLevel import DemLevel
@@ -44,13 +45,20 @@ class PlotPageClass:
             pyqtgraph.PlotWidget, "plotWidget")
         self.__plotClass = PlotWidgetClass(self.__plotWidget)
 
-        # fix point widget
-        self.__fixPointsWidget = FixPointClass(dlg, self.__plotClass)
-
         # table widget
         self.__editTable = self.__dlg.findChild(
             QtWidgets.QTableWidget, "editTableWidget")
         self.__tableClass = TableWidgeClass(self.__editTable, self.__plotClass)
+
+        # fix point widget
+        self.__denFixPointsWidget = FixPointClass(
+            dlg, prefixName="dem", plotWidget=self.__plotClass, tableWidgeClass=self.__tableClass)
+
+        self.__sbkFixPointsWidget = FixPointClass(
+            dlg, prefixName="sbk", plotWidget=self.__plotClass, tableWidgeClass=self.__tableClass)
+
+        # modify buttons
+        self.__modifyButtons = ModifyButtonClass(dlg, self.__tableClass)
 
         self.__saveButton = self.__dlg.findChild(
             QtWidgets.QPushButton, "saveButton")
@@ -72,102 +80,6 @@ class PlotPageClass:
         self.__deleteRowButton = self.__dlg.findChild(
             QtWidgets.QPushButton, "deleteRowButton")
         self.__deleteRowButton.clicked.connect(lambda: self.__deleteRow())
-
-        self.__moveUpButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "moveUpButton")
-        self.__moveUpButton.clicked.connect(lambda: self.__moveUp())
-
-        self.__moveDownButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "moveDownButton")
-        self.__moveDownButton.clicked.connect(lambda: self.__moveDown())
-
-        self.__moveRightButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "moveRightButton")
-        self.__moveRightButton.clicked.connect(lambda: self.__moveRight())
-
-        self.__moveLeftButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "moveLeftButton")
-        self.__moveLeftButton.clicked.connect(lambda: self.__moveLeft())
-
-        self.__ratioTopOutButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "ratioTopOutButton")
-        self.__ratioTopOutButton.clicked.connect(lambda: self.__ratioTopOut())
-
-        self.__ratioTopInButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "ratioTopInButton")
-        self.__ratioTopInButton.clicked.connect(lambda: self.__ratioTopIn())
-
-        self.__ratioBottomOutButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "ratioBottomOutButton")
-        self.__ratioBottomOutButton.clicked.connect(
-            lambda: self.__ratioBottomOut())
-
-        self.__ratioBottomInButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "ratioBottomInButton")
-        self.__ratioBottomInButton.clicked.connect(
-            lambda: self.__ratioBottomIn())
-
-        self.__ratioRightInButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "ratioRightInButton")
-        self.__ratioRightInButton.clicked.connect(
-            lambda: self.__ratioRightIn())
-
-        self.__ratioRightOutButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "ratioRightOutButton")
-        self.__ratioRightOutButton.clicked.connect(
-            lambda: self.__ratioRightOut())
-
-        self.__ratioLeftOutButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "ratioLeftOutButton")
-        self.__ratioLeftOutButton.clicked.connect(
-            lambda: self.__ratioLeftOut())
-
-        self.__ratioLeftInButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "ratioLeftInButton")
-        self.__ratioLeftInButton.clicked.connect(lambda: self.__ratioLeftIn())
-
-        self.__moveTopOutButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "moveTopOutButton")
-        self.__moveTopOutButton.clicked.connect(lambda: self.__moveTopOut())
-
-        self.__moveTopInButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "moveTopInButton")
-        self.__moveTopInButton.clicked.connect(lambda: self.__moveTopIn())
-
-        self.__moveBottomOutButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "moveBottomOutButton")
-        self.__moveBottomOutButton.clicked.connect(
-            lambda: self.__moveBottomOut())
-
-        self.__moveBottomInButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "moveBottomInButton")
-        self.__moveBottomInButton.clicked.connect(
-            lambda: self.__moveBottomIn())
-
-        self.__moveRightInButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "moveRightInButton")
-        self.__moveRightInButton.clicked.connect(lambda: self.__moveRightIn())
-
-        self.__moveRightOutButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "moveRightOutButton")
-        self.__moveRightOutButton.clicked.connect(
-            lambda: self.__moveRightOut())
-
-        self.__moveLeftOutButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "moveLeftOutButton")
-        self.__moveLeftOutButton.clicked.connect(lambda: self.__moveLeftOut())
-
-        self.__moveLeftInButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "moveLeftInButton")
-        self.__moveLeftInButton.clicked.connect(lambda: self.__moveLeftIn())
-
-        self.__zoomInButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "zoomInButton")
-        self.__zoomInButton.clicked.connect(lambda: self.__zoomIn())
-
-        self.__zoomOutButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "zoomOutButton")
-        self.__zoomOutButton.clicked.connect(lambda: self.__zoomOut())
 
         self.__replaceResolutionUpButton = self.__dlg.findChild(
             QtWidgets.QPushButton, "replaceResolutionUpButton")
@@ -218,71 +130,9 @@ class PlotPageClass:
     def __deleteRow(self):
         self.__tableClass.deletSelectedRow()
 
-    def __moveUp(self):
-        self.__tableClass.dataMove(moveZ=0.1)
-
-    def __moveDown(self):
-        self.__tableClass.dataMove(moveZ=-0.1)
-
-    def __moveRight(self):
-        self.__tableClass.dataMove(moveL=1.0)
-
-    def __moveLeft(self):
-        self.__tableClass.dataMove(moveL=-1.0)
-
-    def __ratioTopOut(self):
-        self.__tableClass.topDataMove(ratio=0.15)
-
-    def __ratioTopIn(self):
-        self.__tableClass.topDataMove(ratio=-0.15)
-
-    def __ratioBottomOut(self):
-        self.__tableClass.bottomDataMove(ratio=0.15)
-
-    def __ratioBottomIn(self):
-        self.__tableClass.bottomDataMove(ratio=-0.15)
-
-    def __ratioRightOut(self):
-        self.__tableClass.rightDataMove(ratio=0.15)
-
-    def __ratioRightIn(self):
-        self.__tableClass.rightDataMove(ratio=-0.15)
-
-    def __ratioLeftOut(self):
-        self.__tableClass.leftDataMove(ratio=0.15)
-
-    def __ratioLeftIn(self):
-        self.__tableClass.leftDataMove(ratio=-0.15)
-
-    def __moveTopOut(self):
-        self.__tableClass.topDataMove(moveZ=0.1)
-
-    def __moveTopIn(self):
-        self.__tableClass.topDataMove(moveZ=-0.1)
-
-    def __moveBottomOut(self):
-        self.__tableClass.bottomDataMove(moveZ=-0.1)
-
-    def __moveBottomIn(self):
-        self.__tableClass.bottomDataMove(moveZ=1.0)
-
-    def __moveRightOut(self):
-        self.__tableClass.rightDataMove(moveL=1.0)
-
-    def __moveRightIn(self):
-        self.__tableClass.rightDataMove(moveL=-1.0)
-
-    def __moveLeftOut(self):
-        self.__tableClass.leftDataMove(moveL=-1.0)
-
-    def __moveLeftIn(self):
-        self.__tableClass.leftDataMove(moveL=1.0)
-
-    def __zoomOut(self):
-        self.__tableClass.dataZoom(0.95)
-
-    def __zoomIn(self):
-        self.__tableClass.dataZoom(1.05)
+    def __rationTRUp(self):
+        self.__tableClass.dataMove(
+            ratioL=1.0, moveL=0.1, directionL=1, ratioZ=1.0, moveZ=0.1, directionZ=1)
 
     def __replaceResolutionUp(self):
         if(self.__rasterReplaceResolution + 1 < 50.0):
@@ -312,8 +162,10 @@ class PlotPageClass:
             endPoint = self.__tableClass.getEndPoint()
 
             # get fixPoints
-            leftFixPoint = self.__fixPointsWidget.getLeftFixPoint()  # [y,z]
-            rightFixPoint = self.__fixPointsWidget.getRightFixPoint()  # [y,z]
+            # [y,z]
+            leftFixPoint = self.__denFixPointsWidget.getLeftFixPoint.getLeftFixPoint()
+            # [y,z]
+            rightFixPoint = self.__denFixPointsWidget.getRightFixPoint()
 
             # save
             updateDate = {
@@ -441,7 +293,7 @@ class PlotPageClass:
         # except:
         # return self.__nullValue
 
-    # plot fixPoint
+    # plot dem fixPoint
     def __plotFixPoint(self, geometryValueList):
         normolizeVlaueList = self.__plotClass.dataNormalize(
             geometryValueList)
@@ -465,12 +317,12 @@ class PlotPageClass:
                 rightZ = zList[index]
         try:
 
-            self.__fixPointsWidget.setLeftFixPointYZ(
+            self.__denFixPointsWidget.setLeftFixPointYZ(
                 round(leftY, 2), round(leftZ, 2))
-            self.__fixPointsWidget.setRightFixPointYZ(
+            self.__denFixPointsWidget.setRightFixPointYZ(
                 round(rightY, 2), round(rightZ, 2))
-            self.__fixPointsWidget.plot()
-            self.__fixPointsWidget.unBlockTextEdit()
+            self.__denFixPointsWidget.plot()
+            self.__denFixPointsWidget.unBlockTextEdit()
         except:
             traceback.print_exc()
 
@@ -480,8 +332,8 @@ class PlotPageClass:
         self.__rasterReplaceResolution = self.__rasterDetectLength
 
         # clear fixPoint widget
-        self.__fixPointsWidget.clear()
-        self.__fixPointsWidget.blockTextEdit()
+        self.__denFixPointsWidget.clear()
+        self.__denFixPointsWidget.blockTextEdit()
 
     # -------------------------------------READ RASTER PIXEL FROM FROM DEMLAYER----------------------------------
     # def __getRasterSize(self):

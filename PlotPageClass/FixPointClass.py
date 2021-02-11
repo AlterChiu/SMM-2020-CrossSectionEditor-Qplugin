@@ -8,35 +8,39 @@ import sys
 import traceback
 
 from .PlotWidget.PlotWidgetClass import PlotWidgetClass
+from .TableWidget.TableWidgeClass import TableWidgeClass
 
 
 class FixPointClass:
 
-    def __init__(self, dlg, plotWidget: PlotWidgetClass):
+    # dataList format = [[x,y,l,z]....]
+    def __init__(self, dlg, prefixName: str, plotWidget: PlotWidgetClass, dataList: list):
 
         # constant
         self.__dlg = dlg
         self.__plotWidget = plotWidget
         self.__validator = QDoubleValidator()
+        self.__prefixName = prefixName
+        self.__tableWidgeClass = TableWidgeClass
 
         # text edit
         self.__leftFixPointYWidget = self.__dlg.findChild(
-            QLineEdit, "leftFixPointY")
+            QLineEdit, prefixName + "leftFixPointY")
         self.__leftFixPointYWidget.setValidator(self.__validator)
         self.__leftFixPointYWidget.textChanged.connect(lambda: self.plot())
 
         self.__leftFixPointZWidget = self.__dlg.findChild(
-            QLineEdit, "leftFixPointZ")
+            QLineEdit, prefixName+"leftFixPointZ")
         self.__leftFixPointZWidget.setValidator(self.__validator)
         self.__leftFixPointZWidget.textChanged.connect(lambda: self.plot())
 
         self.__rightFixPointYWidget = self.__dlg.findChild(
-            QLineEdit, "rightFixPointY")
+            QLineEdit, prefixName+"rightFixPointY")
         self.__rightFixPointYWidget.setValidator(self.__validator)
         self.__rightFixPointYWidget.textChanged.connect(lambda: self.plot())
 
         self.__rightFixPointZWidget = self.__dlg.findChild(
-            QLineEdit, "rightFixPointZ")
+            QLineEdit, prefixName+"rightFixPointZ")
         self.__rightFixPointZWidget.setValidator(self.__validator)
         self.__rightFixPointZWidget.textChanged.connect(lambda: self.plot())
 
@@ -65,26 +69,30 @@ class FixPointClass:
             traceback.print_exc()
             print("rightFixPoint convert exception")
 
+    def __autoDetectZ(self):
+
     def plot(self):
         self.__plotWidget.clearFixPoint()
         try:
             temptLeftY = float(self.__leftFixPointYWidget.text())
             temptLeftZ = float(self.__leftFixPointZWidget.text())
-            self.__plotWidget.setLeftFixPoint(temptLeftY, temptLeftZ)
+            self.__plotWidget.setFixPoint(
+                temptLeftY, temptLeftZ, self.__prefixName, "left")
 
         except:
             traceback.print_exc()
-            self.__plotWidget.setLeftFixPoint(
-                self.__leftFixPoint["y"], self.__leftFixPoint["z"])
+            self.__plotWidget.setFixPoint(
+                self.__leftFixPoint["y"], self.__leftFixPoint["z"], self.__prefixName, "left")
 
         try:
             temptRightY = float(self.__rightFixPointYWidget.text())
             temptRightZ = float(self.__rightFixPointZWidget.text())
-            self.__plotWidget.setRightFixPoint(temptRightY, temptRightZ)
+            self.__plotWidget.setFixPoint(
+                temptRightY, temptRightZ, self.__prefixName, "right")
         except:
             traceback.print_exc()
-            self.__plotWidget.setRightFixPoint(
-                 self.__rightFixPoint["y"], self.__rightFixPoint["z"])
+            self.__plotWidget.setFixPoint(
+                self.__rightFixPoint["y"], self.__rightFixPoint["z"], self.__prefixName, "right")
 
         self.__plotWidget.plotFixPoints()
 

@@ -167,51 +167,32 @@ class TableWidgeClass:
 
         self.reload()
 
-    def rightDataMove(self, ratio: float = 1.0,  moveL: float = 0):
-        self.__tableDataRatioMoveL(ratio=ratio, moveL=moveL, direction=1)
-        self.reload()
-
-    def leftDataMove(self,  ratio: float = 1.0, moveL: float = 0):
-        self.__tableDataRatioMoveL(ratio=ratio, moveL=moveL, direction=-1)
-        self.reload()
-
-    def topDataMove(self, ratio: float = 1.0, moveZ: float = 0):
-        self.__tableDataRatioMoveZ(ratio=ratio, moveZ=moveZ, direction=1)
-        self.reload()
-
-    def bottomDataMove(self, ratio: float = 1.0, moveZ: float = 0):
-        self.__tableDataRatioMoveZ(ratio=ratio, moveZ=moveZ, direction=-1)
-        self.reload()
-
-    def dataMove(self, moveZ: float = 0, moveL: float = 0):
-        for row in range(0, len(self.__tableData)):
-            temptL = self.__tableData[row][2] + moveL
-            temptXY = self.__lengthToXY(temptL)
-
-            self.__tableData[row][0] = temptXY[0]
-            self.__tableData[row][1] = temptXY[1]
-            self.__tableData[row][2] = temptL
-            self.__tableData[row][3] = self.__tableData[row][3] + moveZ
-        self.reload()
-
-    def dataZoom(self, zoom: float = 0):
-        if zoom > 0:
-            self.__tableDataRatioMoveL(zoom, 0)
-            self.__tableDataRatioMoveZ(zoom, 0)
-        self.reload()
-
-    # move => persantage to move
-    # moveL = 1.05, which L will change from 1 to 1.05 (2 to 2.10), same as moveZ
-    # direction <0:left , >0:right , 0: bothSide
-    def __tableDataRatioMoveL(self, ratio: float = 1.0, moveL: float = 0, direction: int = 0):
-
-        # get middle L
+    # get middle L
+    def __getLList(self) -> list:
         temptLList = []
         for point in self.__tableData:
             temptLList.append(point[2])
-        middleL = (max(temptLList) + min(temptLList))/2
+        return {
+            "dataList": temptZList,
+            "max": max(temptLList),
+            "min": min(temptLList),
+            "middle": (max(temptLList) + min(temptLList))/2
+        }
 
-        # moving
+    # get middle Z
+    def __getZList(self) -> list:
+        temptZList = []
+        for point in self.__tableData:
+            temptZList.append(point[3])
+        return {
+            "dataList": temptZList,
+            "max": max(temptZList),
+            "min": min(temptZList),
+            "mid": (max(temptZList) + min(temptZList))/2
+        }
+
+    # move dateL , direction{ 0: bothSide , 1: rightSide , -1:leftSide}
+    def __dateMoveL(self, direction: int, middleL: float):
         for row in range(0, len(self.__tableData)):
             temptL = self.__tableData[row][2]
             if direction == 0:
@@ -225,51 +206,8 @@ class TableWidgeClass:
             self.__tableData[row][1] = temptXY[1]
             self.__tableData[row][2] = temptL
 
-        # ratio
-        if ratio != 1.0 and direction != 0:
-
-            # get limit L
-            rightLimit = None
-            leftLimit = None
-            napPoint = None
-            if direction > 0:
-                rightLimit = max(temptLList)
-                leftLimit = middleL
-                napPoint = rightLimit
-
-            else:
-                rightLimit = middleL
-                leftLimit = min(temptLList)
-                napPoint = leftLimit
-
-            # get close to limit value
-            for row in range(0, len(self.__tableData)):
-                temptL = self.__tableData[row][2]
-                if (self.__tableData[row][2] - middleL)*direction > 0:
-                    temptL = temptL + \
-                        abs(napPoint - temptL) * ratio * direction
-
-                    # check value range
-                    if temptL < leftLimit:
-                        temptL = leftLimit
-                    elif temptL > rightLimit:
-                        temptL = rightLimit
-
-                temptXY = self.__lengthToXY(temptL)
-                self.__tableData[row][0] = temptXY[0]
-                self.__tableData[row][1] = temptXY[1]
-                self.__tableData[row][2] = temptL
-
-    # direction <0:bottom , >0:top, 0: bothSide
-    def __tableDataRatioMoveZ(self, ratio: float = 1.0, moveZ: float = 0.0, direction: int = 0):
-
-        # get middle Z
-        temptZList = []
-        for point in self.__tableData:
-            temptZList.append(point[3])
-        middleZ = (max(temptZList) + min(temptZList))/2
-
-        # moving
+    # move dateZ , direction{ 0: bothSide , 1: topSide , -1:bottomSide}
+    def __dateMoveZ(self, direction: int, middleZ: float):
         for row in range(0, len(self.__tableData)):
             temptZ = self.__tableData[row][3]
 
@@ -281,37 +219,97 @@ class TableWidgeClass:
 
             self.__tableData[row][3] = temptZ
 
-        # ratio
-        if ratio != 1.0 and direction != 0:
+    # get limit L
+    def __getLLimit(self, temptLList: dict, direction: int):
+        if direction > 0:
+            return {
+                "rightLimit": temptLList["max"],
+                "leftLimit": temptLList["mid"],
+                "napPoint": temptLList["max"]
+            }
 
-            # get limit Z
-            topLimit = None
-            bottomLimit = None
-            napPoint = None
-            if direction > 0:
-                topLimit = max(temptZList)
-                bottomLimit = middleZ
-                napPoint = topLimit
+        else:
+            return {
+                "rightLimit": temptLList["mid"],
+                "leftLimit": temptLList["min"],
+                "napPoint": temptLList["mid"]
+            }
 
-            else:
-                topLimit = middleZ
-                bottomLimit = min(temptZList)
-                napPoint = bottomLimit
+    # get limit Z
+    def __getZLimit(self, temptZList: dict, direction: int):
+        if direction > 0:
+            return {
+                "topLimit": temptZList["max"],
+                "bottomLimit": temptZList["mid"],
+                "napPoint": temptZList["max"]
+            }
+        else:
+            return {
+                "topLimit": temptZList["mid"],
+                "bottomLimit": temptZList["min"],
+                "napPoint": temptZList["mid"]
+            }
 
-            # get close to limit value
-            for row in range(0, len(self.__tableData)):
-                temptZ = self.__tableData[row][3]
-                if (self.__tableData[row][3] - middleZ)*direction > 0:
-                    temptZ = temptZ + \
-                        abs(napPoint - temptZ) * ratio * direction
+    def __checkLValue(self, rightLimit: float, leftLimit: float, value: float):
+        if tvalue < leftLimit:
+            return leftLimit
+        elif value > rightLimit:
+            return rightLimit
+        else:
+            return value
 
-                    # check value range
-                    if temptZ < bottomLimit:
-                        temptZ = bottomLimit
-                    elif temptZ > topLimit:
-                        temptZ = topLimit
+    def __checkZValue(self, topLimit: float, bottomLimit: float, value: float):
+        if value < bottomLimit:
+            return bottomLimit
+        elif value > topLimit:
+            return topLimit
+        else:
+            return value
 
-                self.__tableData[row][3] = temptZ
+        # move => persantage to move
+        # moveL = 1.05, which L will change from 1 to 1.05 (2 to 2.10), same as moveZ
+        # direction <0:left , >0:right , 0: bothSide
+
+    def dataMove(self, ratioL: float = 1.0, moveL: float = 0, directionL: int = 0, ratioZ: float = 1.0, moveZ: float = 0, directionZ: int = 0):
+
+        # get middle L
+        temptLList = self.__getLList()
+
+        # get middle Z
+        temptZList = self.__getZList()
+
+        # get close to limit value
+        for row in range(0, len(self.__tableData)):
+            temptL = self.__tableData[row][2]
+            temptZ = self.__tableDate[row][3]
+
+            # get which part to modified
+            if (temptL - temptLList["mid"])*directionL >= 0 \
+                    and (temptZ - temptZList["mid"])*directionZ >= 0:
+
+                # get valueL , find limitValue , modify , check
+                lLimit = self.__getLLimit(
+                    temptLList, (temptL - temptLList["mid"]))
+                temptL = temptL + moveL +\
+                    (lLimit["napPoint"] - temptL) * ratio
+                temptL = self.__checkLValue(
+                    lLimit["rightLimit"], lLimit["liftLimit"], temptL)
+
+                # get valueL , find limitValue , modify , check
+                ZLimit = self.__getZLimit(
+                    temptZList, (temptZ - temptZList["mid"]))
+                temptZ = temptZ + moveZ +\
+                    (ZLimit["napPoint"] - temptZ) * ratio
+                temptZ = self.__checkZValue(
+                    ZLimit["topLimit"], ZLimit["bottomLimit"], temptZ)
+
+            temptXY = self.__lengthToXY(temptL)
+            self.__tableData[row][0] = temptXY[0]
+            self.__tableData[row][1] = temptXY[1]
+            self.__tableData[row][2] = temptL
+            self.__tableData[row][3] = temptZ
+
+        self.reload()
 
     # private function
     # ----------------------------------------------------------
