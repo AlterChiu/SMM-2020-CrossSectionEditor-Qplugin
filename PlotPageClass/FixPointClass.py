@@ -22,6 +22,7 @@ class FixPointClass:
         self.__validator = QDoubleValidator()
         self.__prefixName = prefixName
         self.__tableWidgeClass = TableWidgeClass
+        self.__dataList = dataList
 
         # text edit
         self.__leftFixPointYWidget = self.__dlg.findChild(
@@ -69,8 +70,59 @@ class FixPointClass:
             traceback.print_exc()
             print("rightFixPoint convert exception")
 
-    def __autoDetectZ(self):
+    def __autoDetectRightZ(self):
+        temptL = float(self.__rightFixPointYWidget.text())
+        temptZ = self.__autoDetectZ(temptL)
 
+        if(temptZ != None):
+            self.__rightFixPointZWidget.setText(str(temptZ))
+        self.plot()
+
+    def __autoDetectLeftZ(self):
+        temptL = float(self.__leftFixPointYWidget.text())
+        temptZ = self.__autoDetectZ(temptL)
+        
+        if(temptZ != None):
+            self.__leftFixPointZWidget.setText(str(temptZ))
+        self.plot()
+    
+    def __autoDetectZ(self , l:float):
+        
+        smallerValues = [] #[[y,z]]
+        biggerValues = [] #[[y,z]]
+        
+        for value in self.__dataList:
+            temptL = value[2]
+            
+            if temptL > l:
+                biggerValues.append([temptL , value[3]])
+            else:
+                smallerValues.append([temptL , value[3]])
+                
+        smallerValue = None
+        try:
+            max(smallerValue , key= lambda x: x[2])
+        except:
+            pass
+        
+        biggerValue = None
+        try:
+            min(biggerValue , key=lambda x:x[2])
+        except:
+            pass
+        
+        if biggerValue == None and smallerValue == None:
+            return None
+        elif biggerValue == None:
+            return smallerValue[3]
+        elif smallerValue == None:
+            return biggerValue[3]
+        else:
+            totalL = biggerValue[2] - smallerValue[2]
+            dsiL = l - smallerValue[2]
+            totalZ = biggerValue[3] - smallerValue[3] 
+            return smallerValue[3] + totalZ*(disL/totalL)
+                    
     def plot(self):
         self.__plotWidget.clearFixPoint()
         try:
@@ -94,7 +146,7 @@ class FixPointClass:
             self.__plotWidget.setFixPoint(
                 self.__rightFixPoint["y"], self.__rightFixPoint["z"], self.__prefixName, "right")
 
-        self.__plotWidget.plotFixPoints()
+        self.__plotWidget.plotFixPoints(self.__prefixName)
 
     def getRightFixPoint(self) -> list:  # [y,z]
         return [self.__rightFixPointYWidget.text(), self.__rightFixPointZWidget.text()]

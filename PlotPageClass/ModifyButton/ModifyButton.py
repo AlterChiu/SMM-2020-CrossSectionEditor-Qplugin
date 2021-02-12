@@ -7,9 +7,12 @@ import traceback
 from ..TableWidget.TableWidgeClass import TableWidgeClass
 
 
-class ModifyButtonClass(self):
+class ModifyButtonClass:
 
     def __init__(self, dlg, tableClass: TableWidgeClass):
+        self.__dlg = dlg
+        self.__tableClass = tableClass
+        
         self.__moveUpButton = self.__dlg.findChild(
             QtWidgets.QPushButton, "moveUp")
         self.__moveUpButton.clicked.connect(lambda: self.__moveUp())
@@ -26,10 +29,6 @@ class ModifyButtonClass(self):
             QtWidgets.QPushButton, "moveLeft")
         self.__moveLeftButton.clicked.connect(lambda: self.__moveLeft())
 
-        self.__ratioTRUpButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "ratioTRUp")
-        self.__ratioTRUpButton.clicked.connect(lambda: self.__ratioTRUp())
-
         self.__moveTLUpButton = self.__dlg.findChild(
             QtWidgets.QPushButton, "moveTLUp")
         self.__moveTLUpButton.clicked.connect(lambda: self.__moveTLUp())
@@ -45,14 +44,6 @@ class ModifyButtonClass(self):
         self.__moveTRDownButton = self.__dlg.findChild(
             QtWidgets.QPushButton, "moveTRDown")
         self.__moveTRDownButton.clicked.connect(lambda: self.__moveTRDown())
-
-        self.__moveTRLeftButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "moveTRLeft")
-        self.__moveTRLeftButton.clicked.connect(lambda: self.__moveTRLeft())
-
-        self.__moveTRRightButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "moveTRRight")
-        self.__moveTRRightButton.clicked.connect(lambda: self.__moveTRRight())
 
         self.__moveBLUpButton = self.__dlg.findChild(
             QtWidgets.QPushButton, "moveBLUp")
@@ -102,15 +93,6 @@ class ModifyButtonClass(self):
             QtWidgets.QPushButton, "ratioTRDown")
         self.__ratioTRDownButton.clicked.connect(lambda: self.__ratioTRDown())
 
-        self.__ratioTRLeftButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "ratioTRLeft")
-        self.__ratioTRLeftButton.clicked.connect(lambda: self.__ratioTRLeft())
-
-        self.__ratioTRRightButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "ratioTRRight")
-        self.__ratioTRRightButton.clicked.connect(
-            lambda: self.__ratioTRRight())
-
         self.__ratioBLUpButton = self.__dlg.findChild(
             QtWidgets.QPushButton, "ratioBLUp")
         self.__ratioBLUpButton.clicked.connect(lambda: self.__ratioBLUp())
@@ -156,102 +138,99 @@ class ModifyButtonClass(self):
 
     def __moveLeft(self):
         self.__tableClass.dataMove(moveL=-1.0)
-
-    def __ratioTopOut(self):
-        self.__tableClass.topDataMove(ratio=0.15)
-
+        
     def __moveTLUp(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=0.0, directionL=-1.0, ratioZ=1.0, moveZ=0.1, directionZ=1.0)
+            ratioL=0.0, moveL=0.0, directionL=-1.0, ratioZ=0.0, moveZ=0.1, directionZ=1.0)
 
     def __moveTLDown(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=0.0, directionL=-1.0, ratioZ=1.0, moveZ=-0.1, directionZ=1.0)
+            ratioL=0.0, moveL=0.0, directionL=-1.0, ratioZ=0.0, moveZ=-0.1, directionZ=1.0)
 
     def __moveTRUp(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=0.0, directionL=1, ratioZ=1.0, moveZ=0.1, directionZ=1.0)
+            ratioL=0.0, moveL=0.0, directionL=1, ratioZ=0.0, moveZ=0.1, directionZ=1.0)
 
     def __moveTRDown(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=0.0, directionL=1, ratioZ=1.0, moveZ=-0.1, directionZ=1.0)
+            ratioL=0.0, moveL=0.0, directionL=1, ratioZ=0.0, moveZ=-0.1, directionZ=1.0)
 
     def __moveBLUp(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=0.0, directionL=-1.0, ratioZ=1.0, moveZ=0.1, directionZ=-1.0)
+            ratioL=0.0, moveL=0.0, directionL=-1.0, ratioZ=0.0, moveZ=0.1, directionZ=-1.0)
 
     def __moveBLDown(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=0.0, directionL=-1.0, ratioZ=1.0, moveZ=-0.1, directionZ=-1.0)
+            ratioL=0.0, moveL=0.0, directionL=-1.0, ratioZ=0.0, moveZ=-0.1, directionZ=-1.0)
 
     def __moveBLLeft(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=-0.1, directionL=-1.0, ratioZ=1.0, moveZ=0.0, directionZ=0)
+            ratioL=0.0, moveL=-0.1, directionL=-1.0, ratioZ=0.0, moveZ=0.0, directionZ=0)
 
     def __moveBLRight(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=0.1, directionL=-1.0, ratioZ=1.0, moveZ=0.0, directionZ=0)
+            ratioL=0.0, moveL=0.1, directionL=-1.0, ratioZ=0.0, moveZ=0.0, directionZ=0)
 
     def __moveBRUp(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=0.0, directionL=1, ratioZ=1.0, moveZ=0.1, directionZ=-1.0)
+            ratioL=0.0, moveL=0.0, directionL=1, ratioZ=0.0, moveZ=0.1, directionZ=-1.0)
 
     def __moveBRDown(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=0.0, directionL=1, ratioZ=1.0, moveZ=-0.1, directionZ=-1.0)
+            ratioL=0.0, moveL=0.0, directionL=1, ratioZ=0.0, moveZ=-0.1, directionZ=-1.0)
 
     def __moveBRLeft(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=-0.1, directionL=1, ratioZ=1.0, moveZ=0.0, directionZ=0)
+            ratioL=0.0, moveL=-0.1, directionL=1, ratioZ=0.0, moveZ=0.0, directionZ=0)
 
     def __moveBRRight(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=0.1, directionL=1, ratioZ=1.0, moveZ=0.0, directionZ=0)
+            ratioL=0.0, moveL=0.1, directionL=1, ratioZ=0.0, moveZ=0.0, directionZ=0)
 
     def __ratioTLUp(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=0.0, directionL=-1.0, ratioZ=0.15, moveZ=0.0, directionZ=1.0)
+            ratioL=0.0, moveL=0.0, directionL=-1.0, ratioZ=0.15, moveZ=0.0, directionZ=1.0)
 
     def __ratioTLDown(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=0.0, directionL=-1.0, ratioZ=0.15, moveZ=0.0, directionZ=1.0)
+            ratioL=0.0, moveL=0.0, directionL=-1.0, ratioZ=-0.15, moveZ=0.0, directionZ=1.0)
 
     def __ratioTRUp(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=0.0, directionL=1, ratioZ=0.15, moveZ=0.0, directionZ=1.0)
+            ratioL=0.0, moveL=0.0, directionL=1, ratioZ=0.15, moveZ=0.0, directionZ=1.0)
 
     def __ratioTRDown(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=0.0, directionL=1, ratioZ=0.15, moveZ=0.0, directionZ=1.0)
+            ratioL=0.0, moveL=0.0, directionL=1, ratioZ=-0.15, moveZ=0.0, directionZ=1.0)
 
     def __ratioBLUp(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=0.0, directionL=-1.0, ratioZ=0.15, moveZ=0.0, directionZ=-1.0)
+            ratioL=0.0, moveL=0.0, directionL=-1.0, ratioZ=-0.15, moveZ=0.0, directionZ=-1.0)
 
     def __ratioBLDown(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=0.0, directionL=-1.0, ratioZ=0.15, moveZ=0.0, directionZ=-1.0)
+            ratioL=0.0, moveL=0.0, directionL=-1.0, ratioZ=0.15, moveZ=0.0, directionZ=-1.0)
 
     def __ratioBLLeft(self):
         self.__tableClass.dataMove(
-            ratioL=0.15, moveL=0.0, directionL=-1.0, ratioZ=1.0, moveZ=0.0, directionZ=0)
+            ratioL=0.15, moveL=0.0, directionL=-1.0, ratioZ=0.0, moveZ=0.0, directionZ=0)
 
     def __ratioBLRight(self):
         self.__tableClass.dataMove(
-            ratioL=0.15, moveL=0.0, directionL=-1.0, ratioZ=1.0, moveZ=0.0, directionZ=0)
+            ratioL=-0.15, moveL=0.0, directionL=-1.0, ratioZ=0.0, moveZ=0.0, directionZ=0)
 
     def __ratioBRUp(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=0.0, directionL=1, ratioZ=0.15, moveZ=0.0, directionZ=-1.0)
+            ratioL=0.0, moveL=0.0, directionL=1, ratioZ=-0.15, moveZ=0.0, directionZ=-1.0)
 
     def __ratioBRDown(self):
         self.__tableClass.dataMove(
-            ratioL=1.0, moveL=0.0, directionL=1, ratioZ=0.15, moveZ=0.0, directionZ=-1.0)
+            ratioL=0.0, moveL=0.0, directionL=1, ratioZ=0.15, moveZ=0.0, directionZ=-1.0)
 
     def __ratioBRLeft(self):
         self.__tableClass.dataMove(
-            ratioL=0.15, moveL=0.0, directionL=1, ratioZ=1.0, moveZ=0.0, directionZ=0)
+            ratioL=-0.15, moveL=0.0, directionL=1, ratioZ=0.0, moveZ=0.0, directionZ=0)
 
     def __ratioBRRight(self):
         self.__tableClass.dataMove(
-            ratioL=0.15, moveL=0.0, directionL=1, ratioZ=1.0, moveZ=0.0, directionZ=0)
+            ratioL=0.15, moveL=0.0, directionL=1, ratioZ=0.0, moveZ=0.0, directionZ=0)

@@ -112,37 +112,21 @@ class PlotWidgetClass:
             except:
                 print("plot secondary")
 
-    def plotDemFixPoints(self):
+    def plotFixPoints(self , prefixName:str):
         fixPointPen = pyqtgraph.mkPen(color="r")
         try:
 
             # plot left point
-            self.__line["fixPoint"]["dem"]["left"] = self.__plotWidget.plot([self.__data["fixPoint"]["dem"]["left"][0]], [
-                self.__data["fixPoint"]["dem"]["left"][1]], pen=fixPointPen, symbol=".", symbolSize=15, symbolBrush=("r"))
+            self.__line["fixPoint"][prefixName]["left"] = self.__plotWidget.plot([self.__data["fixPoint"][prefixName]["left"][0]], [
+                self.__data["fixPoint"][prefixName]["left"][1]], pen=fixPointPen, symbol="o", symbolSize=15, symbolBrush=("r"))
 
             # plot left point
-            self.__rightDemFixPoint = self.__plotWidget.plot([self.__data["fixPoint"]["dem"]["right"][0]], [
-                self.__data["fixPoint"]["dem"]["right"][1]], pen=fixPointPen, symbol=".", symbolSize=15, symbolBrush=("r"))
+            self.__rightDemFixPoint = self.__plotWidget.plot([self.__data["fixPoint"][prefixName]["right"][0]], [
+                self.__data["fixPoint"][prefixName]["right"][1]], pen=fixPointPen, symbol="o", symbolSize=15, symbolBrush=("r"))
 
         except:
             traceback.print_exc()
-            print("plot FixPoint")
-
-    def plotSbkFixPoints(self):
-        fixPointPen = pyqtgraph.mkPen(color="b")
-        try:
-
-            # plot left point
-            self.__line["fixPoint"]["sbk"]["left"] = self.__plotWidget.plot([self.__data["fixPoint"]["sbk"]["left"][0]], [
-                self.__data["fixPoint"]["sbk"]["left"][1]], pen=fixPointPen, symbol=".", symbolSize=15, symbolBrush=("b"))
-
-            # plot left point
-            self.__rightSbkFixPoint = self.__plotWidget.plot([self.__data["fixPoint"]["sbk"]["right"][0]], [
-                self.__data["fixPoint"]["sbk"]["right"][1]], pen=fixPointPen, symbol=".", symbolSize=15, symbolBrush=("b"))
-
-        except:
-            traceback.print_exc()
-            print("plot FixPoint")
+            print("plot FixPoint error " + prefixName)
 
     def rePlotPrimary(self, valueList: list):
         self.clearPrimaryLine()

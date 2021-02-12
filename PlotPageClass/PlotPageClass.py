@@ -52,10 +52,10 @@ class PlotPageClass:
 
         # fix point widget
         self.__denFixPointsWidget = FixPointClass(
-            dlg, prefixName="dem", plotWidget=self.__plotClass, tableWidgeClass=self.__tableClass)
+            dlg, prefixName="dem", plotWidget=self.__plotClass, dataList=self.__tableClass.getTableValues())
 
         self.__sbkFixPointsWidget = FixPointClass(
-            dlg, prefixName="sbk", plotWidget=self.__plotClass, tableWidgeClass=self.__tableClass)
+            dlg, prefixName="sbk", plotWidget=self.__plotClass, dataList=self.__tableClass.getTableValues())
 
         # modify buttons
         self.__modifyButtons = ModifyButtonClass(dlg, self.__tableClass)
