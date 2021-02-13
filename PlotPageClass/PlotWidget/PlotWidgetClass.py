@@ -186,8 +186,7 @@ class PlotWidgetClass:
         self.__addData(valueList, self.__data["primary"])
 
     def addDataSBK(self, valueList: list):  # valueList = [[x,y] , [x,y]]
-        print(valueList)
-        
+              
         # without data normalize
         temptXList = []
         temptYList = []

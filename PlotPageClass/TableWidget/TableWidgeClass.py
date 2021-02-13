@@ -152,7 +152,15 @@ class TableWidgeClass:
         # add value to tables
         for point in valueList:
             self.__tableData.append(point)
-        
+
+        # replot sbk fixPoint
+        # self.__plotClass.clearFixPoint("sbk")
+        # self.__plotClass.setFixPoint(
+        #     y=valueList[0][2], z=valueList[0][3], prefixName="sbk", leftRight="left")
+        # self.__plotClass.setFixPoint(
+        #     y=valueList[-1][2], z=valueList[-1][3], prefixName="sbk", leftRight="right")
+        # self.__plotClass.plotFixPoints("sbk")
+
         self.reload()
 
     # get middle L

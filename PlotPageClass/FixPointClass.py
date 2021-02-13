@@ -89,8 +89,6 @@ class FixPointClass:
         self.plot()
 
     def __autoDetectZ(self, l: float):
-        print(self.__dataList)
-        
         smallerValue = None
         try:
             smallerValue = max(

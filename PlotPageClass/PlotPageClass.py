@@ -74,6 +74,22 @@ class PlotPageClass:
         self.__replaceButton.clicked.connect(
             lambda: self.__replace(resolution=self.__rasterReplaceResolution))
 
+        self.__replaceLeftButton = self.__dlg.findChild(
+            QtWidgets.QPushButton, "replaceLeftButton")
+        self.__replaceLeftButton.clicked.connect(
+            lambda: self.__replaceLeft())
+        
+        self.__replaceRightButton = self.__dlg.findChild(
+            QtWidgets.QPushButton, "replaceRightButton")
+        self.__replaceRightButton.clicked.connect(
+            lambda: self.__replaceRight())
+        
+        self.__replaceMidButton = self.__dlg.findChild(
+            QtWidgets.QPushButton, "replaceMidButton")
+        self.__replaceMidButton.clicked.connect(
+            lambda: self.__replaceMid())  
+        
+        
         self.__addRowButton = self.__dlg.findChild(
             QtWidgets.QPushButton, "addRowButton")
         self.__addRowButton.clicked.connect(lambda: self.__addRow())
@@ -119,9 +135,6 @@ class PlotPageClass:
             # data format : [[x,y,l,z]....]
             tableValues = list(filter(
                 lambda point: point[2] < minL or point[2] > maxL, self.__tableClass.getTableValues()))
-            minTableValue = min(tableValues, key=lambda point: point[2])[2]
-            maxTableValue = max(tableValues, key=lambda point: point[2])[2]
-            originalTableSize = len(tableValues)
 
             # get values from demLevel
             # data format : [{"x":x , "y":y , "dy" :dy ,"z":z}]
@@ -138,21 +151,41 @@ class PlotPageClass:
             for point in xyzList:
 
                 normalizeDy = point["dy"]-midDy
-                if normalizeDy > minL and normalizeDy < minTableValue:
-                    tableValues.insert(len(tableValues) -
-                                       originalTableSize, [point["x"], point["y"], point["dy"], point["z"]])
-
-                elif normalizeDy > maxTableValue and normalizeDy < maxL:
+                if normalizeDy > minL and normalizeDy < maxL:
                     tableValues.append(
-                        [point["x"], point["y"], point["dy"], point["z"]])
-                else:
-                    pass
+                        [point["x"], point["y"], normalizeDy, point["z"]])
 
-            self.__tableClass.replace(tableValues)
+            self.__tableClass.replace(sorted(tableValues,key=lambda x:x[2]))
         except:
             traceback.print_exc(file=sys.stdout)
             print("replace error")
 
+    def __replaceLeft(self):
+        try:
+            maxL = float(self.__sbkFixPointsWidget.getLeftFixPoint()[0])
+            minL = float(self.__demFixPointsWidget.getLeftFixPoint()[0])
+            self.__replace(resolution=self.__rasterReplaceResolution , minL=minL , maxL=maxL)
+        except:
+            traceback.print_exc()
+            pass
+        
+    def __replaceRight(self):
+        try:
+            minL = float(self.__sbkFixPointsWidget.getRightFixPoint()[0])
+            maxL = float(self.__demFixPointsWidget.getRightFixPoint()[0])
+            self.__replace(resolution=self.__rasterReplaceResolution , minL=minL , maxL=maxL)
+        except:
+            traceback.print_exc()
+            pass
+        
+    def __replaceMid(self):
+        try:
+            minL = float(self.__sbkFixPointsWidget.getLeftFixPoint()[0])
+            maxL = float(self.__sbkFixPointsWidget.getRightFixPoint()[0])
+            self.__replace(resolution=self.__rasterReplaceResolution , minL=minL , maxL=maxL)
+        except:
+            pass
+    
     def __addRow(self):
         self.__tableClass.addNewRow()
 
@@ -212,7 +245,6 @@ class PlotPageClass:
 
     # plot widget
     # ------------------------------------------------------------
-
     def __reFreshPlotWidget(self):
         # clear plot widge
         self.__clearPlotPage()
