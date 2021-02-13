@@ -42,7 +42,7 @@ class TableWidgeClass:
         self.__startX = None
         self.__startY = None
         self.__startZ = None
-        self.__tableData = []
+        self.__tableData.clear()
         self.__startX = x
         self.__startY = y
         self.__startZ = z
@@ -59,7 +59,7 @@ class TableWidgeClass:
         self.__endX = None
         self.__endY = None
         self.__endZ = None
-        self.__tableData = []
+        self.__tableData.clear()
         self.__endX = x
         self.__endY = y
         self.__endZ = z
@@ -116,7 +116,7 @@ class TableWidgeClass:
             print(selection.row())
             self.deletPoint(selection.row())
         self.reload()
-    
+
     def getTableValues(self) -> list:  # [[x,y,l,z]....]
         return self.__tableData
 
@@ -139,32 +139,20 @@ class TableWidgeClass:
     # advace functions
     # ----------------------------------------------------------
 
-    # valuelist = [x,y,z]
+    # valuelist = [[x,y,l,z]]
 
     def replace(self, valueList: list):
         # clear table data
-        self.__tableData = []
+        self.__tableData.clear()
 
         # set start end points
-        self.setStartPoint(valueList[0][0], valueList[0][1], valueList[0][2])
-        self.setEndPoint(valueList[-1][0], valueList[-1][1], valueList[-1][2])
+        self.setStartPoint(valueList[0][0], valueList[0][1], valueList[0][3])
+        self.setEndPoint(valueList[-1][0], valueList[-1][1], valueList[-1][3])
 
-        # set other point to y-z
-        temptLList = []
-        temptZList = []
-        for index in range(0, len(valueList)):
-            deltX = valueList[index][0] - self.__startX
-            deltY = valueList[index][1] - self.__startY
-            temptLength = math.sqrt(math.pow(deltX, 2)+math.pow(deltY, 2))
-
-            temptLList.append(temptLength)
-            temptZList.append(valueList[index][2])
-
-        # add point
-        midL = (max(temptLList) + min(temptLList))/2
-        for index in range(0, len(temptLList)):
-            self.addPoint(temptLList[index]-midL, temptZList[index])
-
+        # add value to tables
+        for point in valueList:
+            self.__tableData.append(point)
+        
         self.reload()
 
     # get middle L
@@ -283,16 +271,20 @@ class TableWidgeClass:
                     temptLList, (temptL - temptLList["mid"]))
                 temptL = temptL + moveL +\
                     (lLimit["napPoint"] - temptL) * ratioL
-                temptL = self.__checkValue(
-                    lLimit["leftLimit"],lLimit["rightLimit"], temptL)
+
+                if ratioL != 0:
+                    temptL = self.__checkValue(
+                        lLimit["leftLimit"], lLimit["rightLimit"], temptL)
 
                 # get valueL , find limitValue , modify , check
                 ZLimit = self.__getZLimit(
                     temptZList, (temptZ - temptZList["mid"]))
                 temptZ = temptZ + moveZ +\
                     (ZLimit["napPoint"] - temptZ) * ratioZ
-                temptZ = self.__checkValue(
-                    ZLimit["bottomLimit"],ZLimit["topLimit"], temptZ)
+
+                if ratioZ != 0:
+                    temptZ = self.__checkValue(
+                        ZLimit["bottomLimit"], ZLimit["topLimit"], temptZ)
 
             temptXY = self.__lengthToXY(temptL)
             self.__tableData[row][0] = temptXY[0]
@@ -376,7 +368,7 @@ class TableWidgeClass:
         return [temptX, temptY]
 
     def clear(self):
-        self.__tableData = []
+        self.__tableData.clear()
         self.__tableWidget.disconnect()
         self.__tableWidget.setRowCount(0)
 # ===================================TEST===================

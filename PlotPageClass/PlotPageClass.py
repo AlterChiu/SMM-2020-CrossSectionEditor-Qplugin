@@ -51,8 +51,9 @@ class PlotPageClass:
         self.__tableClass = TableWidgeClass(self.__editTable, self.__plotClass)
 
         # fix point widget
-        self.__denFixPointsWidget = FixPointClass(
-            dlg, prefixName="dem", plotWidget=self.__plotClass, dataList=self.__tableClass.getTableValues())
+        self.__currentDemPoints = []  # [[x,y,l,z]...]
+        self.__demFixPointsWidget = FixPointClass(
+            dlg, prefixName="dem", plotWidget=self.__plotClass, dataList=self.__currentDemPoints)
 
         self.__sbkFixPointsWidget = FixPointClass(
             dlg, prefixName="sbk", plotWidget=self.__plotClass, dataList=self.__tableClass.getTableValues())
@@ -110,16 +111,44 @@ class PlotPageClass:
     def __restore(self):
         self.__reFreshPlotWidget()
 
-    def __replace(self, resolution: float):
-
-        # test
-        print("trigger replace")
-
+    def __replace(self, resolution: float, minL: float = -1*float("inf"), maxL: float = float("inf")):
         try:
             features = list(self.__splitLineLayer.selectedFeatures())
-            xyzList = DemLevel.getRasterValuesXYZ(
-                features[0].geometry(), resolution=resolution)
-            self.__tableClass.replace(xyzList)
+
+            # get values from tables
+            # data format : [[x,y,l,z]....]
+            tableValues = list(filter(
+                lambda point: point[2] < minL or point[2] > maxL, self.__tableClass.getTableValues()))
+            minTableValue = min(tableValues, key=lambda point: point[2])[2]
+            maxTableValue = max(tableValues, key=lambda point: point[2])[2]
+            originalTableSize = len(tableValues)
+
+            # get values from demLevel
+            # data format : [{"x":x , "y":y , "dy" :dy ,"z":z}]
+            xyzList = DemLevel.wrapXYZResolution(
+                list(map(lambda point: {"x": point[0], "y": point[1], "dy": point[2], "z": point[3]},
+                         self.__currentDemPoints)), resolution=resolution)
+
+            # normalize currentDemPoints by dy
+            maxDy = max(xyzList, key=lambda point: point["dy"])["dy"]
+            minDy = min(xyzList, key=lambda point: point["dy"])["dy"]
+            midDy = round((maxDy + minDy)/2, 2)
+
+            # out
+            for point in xyzList:
+
+                normalizeDy = point["dy"]-midDy
+                if normalizeDy > minL and normalizeDy < minTableValue:
+                    tableValues.insert(len(tableValues) -
+                                       originalTableSize, [point["x"], point["y"], point["dy"], point["z"]])
+
+                elif normalizeDy > maxTableValue and normalizeDy < maxL:
+                    tableValues.append(
+                        [point["x"], point["y"], point["dy"], point["z"]])
+                else:
+                    pass
+
+            self.__tableClass.replace(tableValues)
         except:
             traceback.print_exc(file=sys.stdout)
             print("replace error")
@@ -163,9 +192,9 @@ class PlotPageClass:
 
             # get fixPoints
             # [y,z]
-            leftFixPoint = self.__denFixPointsWidget.getLeftFixPoint.getLeftFixPoint()
+            leftFixPoint = self.__demFixPointsWidget.getLeftFixPoint.getLeftFixPoint()
             # [y,z]
-            rightFixPoint = self.__denFixPointsWidget.getRightFixPoint()
+            rightFixPoint = self.__demFixPointsWidget.getRightFixPoint()
 
             # save
             updateDate = {
@@ -187,6 +216,7 @@ class PlotPageClass:
     def __reFreshPlotWidget(self):
         # clear plot widge
         self.__clearPlotPage()
+        self.__currentDemPoints.clear()
 
         # get geometry
         featureList = []
@@ -203,16 +233,29 @@ class PlotPageClass:
 
         # start plotting
         if len(featureList) > 0:
+
             # plot primary line
-            geometryValueList = DemLevel.getRasterValuesYZ(
-                featureList[0].geometry(), self.__rasterReplaceResolution)
+            for point in DemLevel.getRasterValue(featureList[0].geometry()):
+                self.__currentDemPoints.append(
+                    [point["x"], point["y"], point["dy"], point["z"]])
+
+            # normalize currentDemPoints by dy
+            maxDy = max(self.__currentDemPoints, key=lambda point: point[2])[2]
+            minDy = min(self.__currentDemPoints, key=lambda point: point[2])[2]
+            midDy = round((maxDy + minDy)/2, 2)
+            for point in self.__currentDemPoints:
+                point[2] = point[2] - midDy
+
+            # data format : [[x,y,z]....]
+            geometryValueList = list(
+                map(lambda point: [point[2], point[3]], self.__currentDemPoints))
             self.__plotClass.addDataPrimary(geometryValueList)
 
         # plot sbkCrossSection
             self.__plotSBK(selectedFeature)
 
         # plot fixPoint
-            self.__plotFixPoint(geometryValueList)
+            self.__plotDemFixPoint(geometryValueList)
 
         # plot otherLine
         if len(featureList) > 1:
@@ -247,8 +290,16 @@ class PlotPageClass:
             yzLine = json.loads(selectedFeature["profile"])
 
             # normalize the yzLine, to make centerX to 0
-            # data format : [[[x1,x2...xn] , [y1,y2.....yn]]]
+            # data format : [[x1...xn] , [y1....yn]]
             yzLine = self.__plotClass.dataNormalize(yzLine)
+
+            # plot fixPoint
+            self.__sbkFixPointsWidget.setLeftFixPointYZ(
+                round(yzLine[0][0], 2), round(yzLine[1][0], 2))
+            self.__sbkFixPointsWidget.setRightFixPointYZ(
+                round(yzLine[0][-1], 2), round(yzLine[1][-1], 2))
+            self.__sbkFixPointsWidget.plot()
+            self.__sbkFixPointsWidget.unBlockTextEdit()
 
             # add to tableWidget
             # -------------------------------------------------
@@ -267,6 +318,7 @@ class PlotPageClass:
             endX = verticeList[-1].x()
             endY = verticeList[-1].y()
             endZ = DemLevel.getPointZValue(endX, endY)
+
             if startZ == self.__nullValue:
                 endZ = 0.0
 
@@ -294,7 +346,7 @@ class PlotPageClass:
         # return self.__nullValue
 
     # plot dem fixPoint
-    def __plotFixPoint(self, geometryValueList):
+    def __plotDemFixPoint(self, geometryValueList):
         normolizeVlaueList = self.__plotClass.dataNormalize(
             geometryValueList)
         yList = normolizeVlaueList[0]
@@ -317,12 +369,12 @@ class PlotPageClass:
                 rightZ = zList[index]
         try:
 
-            self.__denFixPointsWidget.setLeftFixPointYZ(
+            self.__demFixPointsWidget.setLeftFixPointYZ(
                 round(leftY, 2), round(leftZ, 2))
-            self.__denFixPointsWidget.setRightFixPointYZ(
+            self.__demFixPointsWidget.setRightFixPointYZ(
                 round(rightY, 2), round(rightZ, 2))
-            self.__denFixPointsWidget.plot()
-            self.__denFixPointsWidget.unBlockTextEdit()
+            self.__demFixPointsWidget.plot()
+            self.__demFixPointsWidget.unBlockTextEdit()
         except:
             traceback.print_exc()
 
@@ -332,8 +384,8 @@ class PlotPageClass:
         self.__rasterReplaceResolution = self.__rasterDetectLength
 
         # clear fixPoint widget
-        self.__denFixPointsWidget.clear()
-        self.__denFixPointsWidget.blockTextEdit()
+        self.__demFixPointsWidget.clear()
+        self.__demFixPointsWidget.blockTextEdit()
 
     # -------------------------------------READ RASTER PIXEL FROM FROM DEMLAYER----------------------------------
     # def __getRasterSize(self):
