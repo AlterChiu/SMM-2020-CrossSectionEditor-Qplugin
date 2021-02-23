@@ -36,7 +36,7 @@
     <rect>
      <x>440</x>
      <y>580</y>
-     <width>61</width>
+     <width>81</width>
      <height>41</height>
     </rect>
    </property>
@@ -63,7 +63,7 @@
     <rect>
      <x>440</x>
      <y>630</y>
-     <width>81</width>
+     <width>101</width>
      <height>71</height>
     </rect>
    </property>
@@ -90,7 +90,7 @@
     <rect>
      <x>440</x>
      <y>530</y>
-     <width>81</width>
+     <width>101</width>
      <height>41</height>
     </rect>
    </property>
@@ -356,7 +356,7 @@
    <property name="geometry">
     <rect>
      <x>690</x>
-     <y>540</y>
+     <y>500</y>
      <width>51</width>
      <height>51</height>
     </rect>
@@ -383,7 +383,7 @@
    <property name="geometry">
     <rect>
      <x>640</x>
-     <y>590</y>
+     <y>550</y>
      <width>51</width>
      <height>51</height>
     </rect>
@@ -410,7 +410,7 @@
    <property name="geometry">
     <rect>
      <x>740</x>
-     <y>590</y>
+     <y>550</y>
      <width>51</width>
      <height>51</height>
     </rect>
@@ -437,7 +437,7 @@
    <property name="geometry">
     <rect>
      <x>690</x>
-     <y>640</y>
+     <y>600</y>
      <width>51</width>
      <height>51</height>
     </rect>
@@ -465,7 +465,7 @@
     <rect>
      <x>440</x>
      <y>480</y>
-     <width>81</width>
+     <width>101</width>
      <height>41</height>
     </rect>
    </property>
@@ -478,7 +478,7 @@
     </font>
    </property>
    <property name="text">
-    <string>addRow</string>
+    <string>add</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+A</string>
@@ -492,7 +492,7 @@
     <rect>
      <x>440</x>
      <y>430</y>
-     <width>81</width>
+     <width>101</width>
      <height>41</height>
     </rect>
    </property>
@@ -505,7 +505,7 @@
     </font>
    </property>
    <property name="text">
-    <string>deleteRow</string>
+    <string>delete</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+D</string>
@@ -913,7 +913,7 @@
   <widget class="QPushButton" name="replaceResolutionUpButton">
    <property name="geometry">
     <rect>
-     <x>500</x>
+     <x>520</x>
      <y>580</y>
      <width>21</width>
      <height>21</height>
@@ -943,7 +943,7 @@
   <widget class="QPushButton" name="replaceResolutionDownButton">
    <property name="geometry">
     <rect>
-     <x>500</x>
+     <x>520</x>
      <y>600</y>
      <width>21</width>
      <height>21</height>
@@ -1495,6 +1495,33 @@
    </property>
    <property name="text">
     <string>replace</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+R</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="selectStream">
+   <property name="geometry">
+    <rect>
+     <x>730</x>
+     <y>690</y>
+     <width>151</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微軟正黑體</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Select Stream</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+R</string>

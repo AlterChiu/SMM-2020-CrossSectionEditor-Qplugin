@@ -108,6 +108,11 @@ class PlotPageClass:
         self.__replaceResolutionDownButton.clicked.connect(
             lambda: self.__replaceResolutionDown())
 
+        self.__showStreamButton = self.__dlg.findChild(
+             QtWidgets.QPushButton, "selectStream")
+        self.__showStreamButton.clicked.connect(
+            lambda: self.__showStream())
+        
      # getting parameter from first page
         self.__demLayer = firstPageClass.getDemLayer()
         self.__splitLineLayer = firstPageClass.getSplitLineLayer()
@@ -243,6 +248,28 @@ class PlotPageClass:
         except:
             traceback.print_exc()
 
+    def __showStream(self):
+        # get selected feature
+        selectedFeature = None
+        try:
+            features = list(self.__splitLineLayer.selectedFeatures())
+            selectedFeature = features[0]
+            
+            # get selected streamName
+            streamName = selectedFeature["ReferentId"]
+            
+            # select feature which has the same id
+            self.__splitLineLayer.selectByExpression( "\"ReferentId\"='" + str(streamName) +"'")
+            print(  "\"ReferentId\"='" + str(streamName) +"'\"")
+            
+        except:
+            traceback.print_exc()
+            print("error while detecting stream river")
+            
+        
+        
+    
+    
     # plot widget
     # ------------------------------------------------------------
     def __reFreshPlotWidget(self):
@@ -298,10 +325,12 @@ class PlotPageClass:
                 # parse json formate to data format
                 # data format : [[x1,y1],[x2,y2]....[xn,yn]]
                 yzLine = json.loads(featureList[index]["profile"])
-
+                self.__plotClass.addDataSecondary(yzLine)
+                
                 # normalize the yzLine, to make centerX to 0
                 # data format : [[[x1,x2...xn] , [y1,y2.....yn]]]
                 yzLine = self.__plotClass.dataNormalize(yzLine)
+                
 
         # set title
         try:

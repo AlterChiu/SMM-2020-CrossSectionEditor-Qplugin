@@ -147,7 +147,9 @@ class PlotWidgetClass:
         self.clearFixPoint("sbk")
         self.clearFixPoint("dem")
         self.clearSbkLine()
+        self.clearSecondary()
         self.clearPrimaryLine()
+        
         self.__plotWidget.clear()
 
     def clearFixPoint(self , prefixName):
@@ -162,7 +164,16 @@ class PlotWidgetClass:
                 self.__data["fixPoint"][prefixName][rightLeft] = []
             except:
                 pass
+    
+    def clearSecondary(self):
+        try:
+            self.__plotWidget.removeItem(self.__line["seconds"])
+        except:
+            print("no seconds data to clear")
 
+        self.__line["seconds"] = None
+        self.__data["seconds"].clear()       
+    
     def clearSbkLine(self):
         try:
             self.__plotWidget.removeItem(self.__line["sbk"])
