@@ -29,10 +29,15 @@ from qgis.PyQt import QtWidgets
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FirstPageClass, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'FirstPage.ui'))
+    os.path.dirname(__file__), 'UiPage/FirstPage.ui'))
 
 PlotPageClass,_ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__),'PlotPage.ui'))
+    os.path.dirname(__file__),'UiPage/PlotPage.ui'))
+
+BankLinePageClass,_ = uic.loadUiType(os.path.join(
+    os.path.dirname(__file__),'UiPage/BankLinePage.ui'))
+
+
 
 
 class FirstPage(QtWidgets.QDialog, FirstPageClass):
@@ -43,4 +48,9 @@ class FirstPage(QtWidgets.QDialog, FirstPageClass):
 class PlotPage(QtWidgets.QDialog, PlotPageClass):
     def __init__(self, parent=None):
         super(PlotPage, self).__init__(parent)
+        self.setupUi(self)
+
+class BankLinePage(QtWidgets.QDialog, PlotPageClass):
+    def __init__(self, parent=None):
+        super(BankLinePage, self).__init__(parent)
         self.setupUi(self)
