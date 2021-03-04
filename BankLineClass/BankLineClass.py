@@ -24,8 +24,7 @@ class BankLineClass:
         # plotPoage
         self.__currentSelection = {
             "activeIndex": 0,
-            "hoverIndex": None,
-            "maximumIndex": None
+            "hoverIndex": None
         }
 
         # initial comboBox
@@ -70,7 +69,6 @@ class BankLineClass:
             pyqtgraph.PlotWidget, "plotWidget")
         self.__plotClass = PlotWidgetClass(self.__plotWidget , self.__data)
         
-
     def __initialStreamComboBox(self):
         for key in slef.__data.keys():
             self.__streamComboBox.addItem(key)
@@ -118,10 +116,55 @@ class BankLineClass:
             except:
                 traceback.print_exc()   
     
-    
-    
+    def initialCurrentSelection(self):
+        self.__currentSelection = {
+            "activeIndex": 0,
+            "hoverIndex": None
+        }
+
+    # button for slelctions
+    #===================================================================
+    def __select(self):
+        currentHoverIndex = self.__currentSelection["hoverIndex"]
+        if currentHoverIndex != None:
+            
+            # get id from plotWidget by index
+            selectId = self.__plotClass.getSelectedId(currentHoverIndex)
+            referentId = self.__plotClass.getReferentId()
+
+            if selectedID != None and referentId != None:
+
+                # plot widget
+                self.__plotClass.plotActive(currentHoverIndex)
+                self.__plotClass.clearHover()
+
+                # modify privat constant
+                self.selectFeatureID(referentId , selectId)
+                self.__currentSelection["activeIndex"] = currentHoverIndex
+                self.__currentSelection["activeIndex"] = self.__currentSelection["hoverIndex"]
+
+    def __selectionGoLeft(self):
+        currentHoverIndex = self.__currentSelection["hoverIndex"]
+        if currentHoverIndex == None:
+            currentHoverIndex = self.__currentSelection["activeIndex"]
+
+        nextHoverIndex = currentHoverIndex-1
+        if  nextHoverIndex >= 0:
+            self.__plotClass.plotHover(nextHoverIndex)
+            self.__currentSelection["hoverIndex"] = nextHoverIndex
+
+    def __selectionGoRight(self):
+        currentHoverIndex = self.__currentSelection["hoverIndex"]
+        if currentHoverIndex == None:
+            currentHoverIndex = self.__currentSelection["activeIndex"]
+
+        nextHoverIndex = currentHoverIndex+1
+        if  nextHoverIndex < self.__plotClass.getCrossSectionSize():
+            self.__plotClass.plotHover(nextHoverIndex)
+            self.__currentSelection["hoverIndex"] = nextHoverIndex
+
     # QgisLayer selection
-    def selectFeature(self, referentId, crossSectionId):
+    def selectFeatureID(self, referentId, crossSectionId):
 
         # select only active crossSection
         activeExpression = "\"ReferentId\" = \'" + referentId + \
@@ -142,3 +185,9 @@ class BankLineClass:
         
         # selected
         self.__layer.select(selectedIds)
+
+    def selectedReferentID(self , referentId):
+
+         # select referent stream without active crossSection
+        referentExpression = "\"ReferentId\" = \'" + referentId + "\'"
+        self.__layer.selectByExpression( referentExpression)

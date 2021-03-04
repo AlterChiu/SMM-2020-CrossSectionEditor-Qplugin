@@ -260,7 +260,6 @@ class PlotPageClass:
             
             # select feature which has the same id
             self.__splitLineLayer.selectByExpression( "\"ReferentId\"='" + str(streamName) +"'")
-            print(  "\"ReferentId\"='" + str(streamName) +"'\"")
             
         except:
             traceback.print_exc()

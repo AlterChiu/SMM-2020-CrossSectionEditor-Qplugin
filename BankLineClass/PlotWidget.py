@@ -66,6 +66,9 @@ class PlotWidgetClass:
 
         self.__plotHeight()
         
+        self.plotActive(0)
+        self.clearHover()
+
         self.__labelMaxY = self.__featureDatas[self.__referentId][-1]["leftHight"] +2
         self.__labelMinY = self.__featureDatas[self.__referentId][-1]["leftHight"] -2
         self.__plotWidget.setXRange(
@@ -135,10 +138,10 @@ class PlotWidgetClass:
     # selection
     # ==================================================================
     def plotActive(self, index: int):
-        self.__clearActive()
+        self.clearActive()
         self.__plotSelection(index, "activeLine")
 
-    def __clearActive(self):
+    def clearActive(self):
         try:
             self.__line["activeLine"].clear()
             self.__line["activeLine"] = None
@@ -146,10 +149,10 @@ class PlotWidgetClass:
             pass
 
     def plotHover(self, index: int):
-        self.__clearActive()
+        self.clearHover()
         self.__plotSelection(index, "hoverLine")
 
-    def __clearActive(self):
+    def clearHover(self):
         try:
             self.__line["hoverLine"].clear()
             self.__line["hoverLine"] = None
@@ -207,3 +210,12 @@ class PlotWidgetClass:
             return len(self.__featureDatas[self.__referentId])
         except:
             return 0
+    
+    def getReferentId(self):
+        return self.__referentId
+
+    def getSelectedId(self , index):
+        try:
+            return self.__featureDatas[self.__referentId][index]
+        except:
+            return None
