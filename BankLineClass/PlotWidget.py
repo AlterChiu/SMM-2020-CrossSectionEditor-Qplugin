@@ -199,3 +199,11 @@ class PlotWidgetClass:
         except:
             traceback.print_exc()
             print("error while plot selection")
+
+    # public
+    #=====================================================================
+    def getCrossSectionSize(self) -> int:
+        try:
+            return len(self.__featureDatas[self.__referentId])
+        except:
+            return 0

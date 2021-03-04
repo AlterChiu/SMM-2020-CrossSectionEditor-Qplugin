@@ -5,7 +5,7 @@ from qgis.gui import QgsFileWidget
 from qgis.core import QgsWkbTypes, QgsProcessingUtils, QgsVectorLayer, QgsProject, QgsCoordinateReferenceSystem
 
 from ..FramePage import BankLinePage
-from ..PlotPageClass.PlotPageClass import PlotPageClass
+from .PlotWidget import PlotWidgetClass
 import requests
 import traceback
 import json
@@ -44,28 +44,32 @@ class BankLineClass:
         self.__selectButton = self.__dlg.findChild(
             QtWidgets.QPushButton, "select")
         self.__selectButton.clicked.connect(lambda: self.__select())
+        
+        # datas
+        # {
+        #     # "collected by referntId"
+        #     referentId :
 
+        #     # sorted by distance
+        #     [
+        #         {
+        #             id: id,
+        #             leftHight : "the highest level of the left crossSection",
+        #             rightHight : "the highest level of the right crossSection",
+        #             bottom : "the lowest level of the crossSection",
+        #             distance : "distance from begining"
+        #         }
+        #     ]
+        # }
+        self.__data = {}
+        self.initialStreamData()
+        self.__initialStreamComboBox()
+        
         # initial plotWidget
         self.__plotWidget = self.__dlg.findChild(
             pyqtgraph.PlotWidget, "plotWidget")
-
-        # datas
-            # {
-            #     # "collected by referntId"
-            #     referentId :
-
-            #     # sorted by distance
-            #     [
-            #         {
-            #             id: id,
-            #             leftHight : "the highest level of the left crossSection",
-            #             rightHight : "the highest level of the right crossSection",
-            #             bottom : "the lowest level of the crossSection",
-            #             distance : "distance from begining"
-            #         }
-            #     ]
-            # }
-        self.__data = {}
+        self.__plotClass = PlotWidgetClass(self.__plotWidget , self.__data)
+        
 
     def __initialStreamComboBox(self):
         for key in slef.__data.keys():
@@ -112,4 +116,29 @@ class BankLineClass:
                 })
 
             except:
-                traceback.print_exc()
+                traceback.print_exc()   
+    
+    
+    
+    # QgisLayer selection
+    def selectFeature(self, referentId, crossSectionId):
+
+        # select only active crossSection
+        activeExpression = "\"ReferentId\" = \'" + referentId + \
+            "\' and \"id\" = \'" + crossSectionId + "\'"
+        activeCrossSection = self.__layer.getFeatures(
+            QgsFeatureRequest(QgsExpression(activeExpression)))
+        
+        # select referent stream without active crossSection
+        referentExpression = "\"ReferentId\" = \'" + referentId + \
+            "\' and \"id\" != \'" + crossSectionId + "\'"
+        referentCrossSection = self.__layer.getFeatures(
+            QgsFeatureRequest(QgsExpression(referentExpression)))
+        
+        # merge these two
+        activeIds = [i.id() for i in activeCrossSection]
+        referentIds =  [i.id() for i in referentCrossSection]
+        selectedIds = activeIds + referentIds
+        
+        # selected
+        self.__layer.select(selectedIds)
