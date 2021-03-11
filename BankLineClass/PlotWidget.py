@@ -11,26 +11,9 @@ import json
 
 class PlotWidgetClass:
 
-    # layerFeatureData
-    # {
-    #     # "collected by referntId"
-    #     referentId :
-
-    #     # sorted by distance
-    #     [
-    #         {
-    #             id: id,
-    #             leftHight : "the highest level of the left crossSection",
-    #             rightHight : "the highest level of the right crossSection",
-    #             bottom : "the lowest level of the crossSection",
-    #             distance : "distance from begining"
-    #         }
-    #     ]
-    # }
-
-    def __init__(self, plotWidget: pyqtgraph.PlotWidget, layerFeatureData):
+    def __init__(self, plotWidget:pyqtgraph.PlotWidget):
         self.__plotWidget = plotWidget
-        self.__featureDatas = layerFeatureData
+        self.__featureDatas = None
         self.__referentId = None
 
         self.__labelMaxY = 10
@@ -60,19 +43,35 @@ class PlotWidgetClass:
             "hoverLine": None
         }
 
-    def plot(self, referentId: str):
+    # layerFeatureData
+        ## "collected by referntId"
+        #     referentId :
+
+        #     # sorted by distance
+        #     [
+        #         {
+        #             id: id,
+        #             leftHight : "the highest level of the left crossSection",
+        #             rightHight : "the highest level of the right crossSection",
+        #             bottom : "the lowest level of the crossSection",
+        #             distance : "distance from begining"
+        #         }
+        #     ]
+        #
+    def plot(self, referentId: str , featureData):
+        self.__featureDatas = featureData
         self.__referentId = referentId
-        self.__plotWidget.setTitle(self.__referenctId)
+        self.__plotWidget.setTitle(referentId)
 
         self.__plotHeight()
         
         self.plotActive(0)
         self.clearHover()
 
-        self.__labelMaxY = self.__featureDatas[self.__referentId][-1]["leftHight"] +2
-        self.__labelMinY = self.__featureDatas[self.__referentId][-1]["leftHight"] -2
+        self.__labelMaxY = self.__featureDatas[-1]["leftHight"] +2
+        self.__labelMinY = self.__featureDatas[-1]["leftHight"] -2
         self.__plotWidget.setXRange(
-            len(self.__featureDatas[self.__referentId])+1, -1, padding=0)
+            len(self.__featureDatas)+1, -1, padding=0)
         self.__plotWidget.setYRange(
             self.__labelMaxY, self.__labelMinY, padding=0)
 
@@ -92,7 +91,7 @@ class PlotWidgetClass:
             temptRightList = []
             temptBottomList = []
 
-            for profileObject in self.__featureDatas[self.__referentId]:
+            for profileObject in self.__featureDatas:
                 temptLeftValue = None
                 temptRightValue = None
                 temptBottomtValue = None
@@ -113,15 +112,15 @@ class PlotWidgetClass:
 
             # plot Left
             self.__line["leftHight"] = self.__plotWidget.plot(
-                temptXList, temptLeftValue, pen=pyqtgraph.mkPen(color=color["leftHight"]), symbol="o", symbolSize=10, symbolBrush=(color["leftHight"]))
+                temptXList, temptLeftList, pen=pyqtgraph.mkPen(color=color["leftHight"]), symbol="o", symbolSize=10, symbolBrush=(color["leftHight"]))
 
             # plot Right
-            self.__line["righttHight"] = self.__plotWidget.plot(
-                temptXList, temptRightList, pen=pyqtgraph.mkPen(color=color["righttHight"]), symbol="o", symbolSize=10, symbolBrush=(color["righttHight"]))
+            self.__line["rightHight"] = self.__plotWidget.plot(
+                temptXList, temptRightList, pen=pyqtgraph.mkPen(color=color["rightHight"]), symbol="o", symbolSize=10, symbolBrush=(color["rightHight"]))
 
             # plot Bottom
             self.__line["bottomHight"] = self.__plotWidget.plot(
-                temptXList, temptLeftValue, pen=pyqtgraph.mkPen(color=color["bottomHight"]), symbol="o", symbolSize=10, symbolBrush=(color["bottomHight"]))
+                temptXList, temptBottomList, pen=pyqtgraph.mkPen(color=color["bottomHight"]), symbol="o", symbolSize=10, symbolBrush=(color["bottomHight"]))
 
         except:
             traceback.print_exc()
@@ -174,7 +173,7 @@ class PlotWidgetClass:
             # left
             try:
                 temptYList.append(
-                    self.__featureDatas[self.__referentId][index]["leftHight"])
+                    self.__featureDatas[index]["leftHight"])
                 temptXList.append(index)
             except:
                 pass
@@ -182,7 +181,7 @@ class PlotWidgetClass:
             # right
             try:
                 temptYList.append(
-                    self.__featureDatas[self.__referentId][index]["rightHight"])
+                    self.__featureDatas[index]["rightHight"])
                 temptXList.append(index)
             except:
                 pass
@@ -190,14 +189,14 @@ class PlotWidgetClass:
             # bottom
             try:
                 temptYList.append(
-                    self.__featureDatas[self.__referentId][index]["bottomHight"])
+                    self.__featureDatas[index]["bottomHight"])
                 temptXList.append(index)
             except:
                 pass
 
             # plot
             self.__line[selectedType] = self.__plotWidget.plot(
-                temptXList, temptLeftValue, pen=pyqtgraph.mkPen(color=color["selectedType"]))
+                temptXList, temptYList, pen=pyqtgraph.mkPen(color=color[selectedType]))
 
         except:
             traceback.print_exc()
@@ -216,6 +215,6 @@ class PlotWidgetClass:
 
     def getSelectedId(self , index):
         try:
-            return self.__featureDatas[self.__referentId][index]
+            return self.__featureDatas[index]
         except:
             return None

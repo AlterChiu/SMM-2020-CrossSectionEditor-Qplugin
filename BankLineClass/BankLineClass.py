@@ -1,3 +1,4 @@
+import pyqtgraph as pyqtgraph
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QApplication, QPushButton, QLabel, QComboBox
@@ -14,7 +15,7 @@ import sys
 
 
 class BankLineClass:
-    def __init__(self, selectedLayer, streamId):
+    def __init__(self, selectedLayer):
 
         # initial page
         self.__dlg = BankLinePage()
@@ -27,11 +28,6 @@ class BankLineClass:
             "hoverIndex": None
         }
 
-        # initial comboBox
-        self.__streamComboBox = self.__dlg.findChild(
-            QtWidgets.QComboBox, "streamSelection")
-        self.__initialStreamComboBox()
-
         # initial button
         self.__leftButton = self.__dlg.findChild(QtWidgets.QPushButton, "left")
         self.__leftButton.clicked.connect(lambda: self.__selectionGoLeft())
@@ -43,91 +39,102 @@ class BankLineClass:
         self.__selectButton = self.__dlg.findChild(
             QtWidgets.QPushButton, "select")
         self.__selectButton.clicked.connect(lambda: self.__select())
-        
-        # datas
-        # {
-        #     # "collected by referntId"
-        #     referentId :
 
-        #     # sorted by distance
-        #     [
-        #         {
-        #             id: id,
-        #             leftHight : "the highest level of the left crossSection",
-        #             rightHight : "the highest level of the right crossSection",
-        #             bottom : "the lowest level of the crossSection",
-        #             distance : "distance from begining"
-        #         }
-        #     ]
-        # }
-        self.__data = {}
-        self.initialStreamData()
-        self.__initialStreamComboBox()
-        
+        self.__plotButton = self.__dlg.findChild(
+            QtWidgets.QPushButton, "plot")
+        self.__plotButton.clicked.connect(lambda: self.__plot())
+
         # initial plotWidget
         self.__plotWidget = self.__dlg.findChild(
             pyqtgraph.PlotWidget, "plotWidget")
-        self.__plotClass = PlotWidgetClass(self.__plotWidget , self.__data)
-        
-    def __initialStreamComboBox(self):
-        for key in slef.__data.keys():
-            self.__streamComboBox.addItem(key)
+        self.__plotClass = PlotWidgetClass(self.__plotWidget)
 
-    def initialStreamData(self):
+    # datas
+        # # "collected by referntId"
+        # referentId :
+
+        # # sorted by distance
+        # [
+        #     {
+        #         id: id,
+        #         leftHight : "the highest level of the left crossSection",
+        #         rightHight : "the highest level of the right crossSection",
+        #         bottom : "the lowest level of the crossSection",
+        #         distance : "distance from begining"
+        #     }
+        # ]
+    def __initialStreamData(self, selectedReferentID) -> list:
+        data = []
 
         # get all features
         for feature in self.__layer.getFeatures():
-
             try:
-
-                # get basic properties
-                id = feature["id"]
-                profile = feature["profile"]
                 referentId = feature["ReferentId"]
-                distance = feature["DistanceFromReferent"]
-                bottomLevel = min(profile, key=lambda x: x[1])[1]
+                if referentId == selectedReferentID:
 
-                # get profile leveling
-                sortedProfile = sorted(profile, key=lambda x: x[0])
-                minY = sortedProfile[0][0]
-                maxY = sortedProfile[-1][0]
-                midY = (minY + maxY)/2
+                    # get basic properties
+                    id = feature["id"]
+                    profile = eval(feature["profile"])
+                    distance = feature["DistanceFromReferent"]
+                    bottomLevel = min(profile, key=lambda x: x[1])[1]
 
-                # get left/right highest level
-                leftHight = max(
-                    filter(lambda x: x[0] < midY, profile), key=lambda x: x[1])[1]
-                rightHight = max(
-                    filter(lambda x: x[0] > midY, profile), key=lambda x: x[1])[1]
+                    # get profile leveling
+                    sortedProfile = sorted(profile, key=lambda x: x[0])
+                    minY = sortedProfile[0][0]
+                    maxY = sortedProfile[-1][0]
+                    midY = (minY + maxY)/2
 
-                # check the data is empty with referntId
-                temptStreamArray = []
-                if referentId not in self.__data:
-                    temptStreamArray = self.__data[referentId]
+                    # get left/right highest level
+                    leftHight = max(
+                        filter(lambda x: x[0] < midY, profile), key=lambda x: x[1])[1]
+                    rightHight = max(
+                        filter(lambda x: x[0] > midY, profile), key=lambda x: x[1])[1]
 
-                # add to temptArray
-                temptStreamArray.append({
-                    "id": id,
-                    "leftHight": leftHight,
-                    "rightHight": rightHight,
-                    "bottom": bottomLevel,
-                    "distance": distance
-                })
+                    # add to temptArray
+                    data.append({
+                        "id": id,
+                        "leftHight": leftHight,
+                        "rightHight": rightHight,
+                        "bottomHight": bottomLevel,
+                        "distance": distance
+                    })
 
             except:
-                traceback.print_exc()   
-    
+                traceback.print_exc()
+
+        # sort the data
+        return sorted(data, key=lambda x: x["distance"])
+
     def initialCurrentSelection(self):
         self.__currentSelection = {
             "activeIndex": 0,
             "hoverIndex": None
         }
 
+    # button for plot
+    # ===================================================================
+
+    def __plot(self):
+        # clear
+        self.initialCurrentSelection()
+
+        # get selectedFeature
+        features = list(self.__layer.selectedFeatures())
+        selectedFeature = features[0]
+
+        # get selected streamName
+        streamName = selectedFeature["ReferentId"]
+        streamData = self.__initialStreamData(streamName)
+        print(streamData)
+        self.__plotClass.plot(streamName, streamData)
+
     # button for slelctions
-    #===================================================================
+    # ===================================================================
+
     def __select(self):
         currentHoverIndex = self.__currentSelection["hoverIndex"]
         if currentHoverIndex != None:
-            
+
             # get id from plotWidget by index
             selectId = self.__plotClass.getSelectedId(currentHoverIndex)
             referentId = self.__plotClass.getReferentId()
@@ -139,7 +146,7 @@ class BankLineClass:
                 self.__plotClass.clearHover()
 
                 # modify privat constant
-                self.selectFeatureID(referentId , selectId)
+                self.selectFeatureID(referentId, selectId)
                 self.__currentSelection["activeIndex"] = currentHoverIndex
                 self.__currentSelection["activeIndex"] = self.__currentSelection["hoverIndex"]
 
@@ -149,7 +156,7 @@ class BankLineClass:
             currentHoverIndex = self.__currentSelection["activeIndex"]
 
         nextHoverIndex = currentHoverIndex-1
-        if  nextHoverIndex >= 0:
+        if nextHoverIndex >= 0:
             self.__plotClass.plotHover(nextHoverIndex)
             self.__currentSelection["hoverIndex"] = nextHoverIndex
 
@@ -159,7 +166,7 @@ class BankLineClass:
             currentHoverIndex = self.__currentSelection["activeIndex"]
 
         nextHoverIndex = currentHoverIndex+1
-        if  nextHoverIndex < self.__plotClass.getCrossSectionSize():
+        if nextHoverIndex < self.__plotClass.getCrossSectionSize():
             self.__plotClass.plotHover(nextHoverIndex)
             self.__currentSelection["hoverIndex"] = nextHoverIndex
 
@@ -171,23 +178,23 @@ class BankLineClass:
             "\' and \"id\" = \'" + crossSectionId + "\'"
         activeCrossSection = self.__layer.getFeatures(
             QgsFeatureRequest(QgsExpression(activeExpression)))
-        
+
         # select referent stream without active crossSection
         referentExpression = "\"ReferentId\" = \'" + referentId + \
             "\' and \"id\" != \'" + crossSectionId + "\'"
         referentCrossSection = self.__layer.getFeatures(
             QgsFeatureRequest(QgsExpression(referentExpression)))
-        
+
         # merge these two
         activeIds = [i.id() for i in activeCrossSection]
-        referentIds =  [i.id() for i in referentCrossSection]
+        referentIds = [i.id() for i in referentCrossSection]
         selectedIds = activeIds + referentIds
-        
+
         # selected
         self.__layer.select(selectedIds)
 
-    def selectedReferentID(self , referentId):
+    def selectedReferentID(self, referentId):
 
-         # select referent stream without active crossSection
+        # select referent stream without active crossSection
         referentExpression = "\"ReferentId\" = \'" + referentId + "\'"
-        self.__layer.selectByExpression( referentExpression)
+        self.__layer.selectByExpression(referentExpression)

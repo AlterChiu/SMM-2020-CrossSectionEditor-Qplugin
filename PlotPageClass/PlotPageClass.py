@@ -22,6 +22,7 @@ from .ModifyButton.ModifyButton import ModifyButtonClass
 from .FixPointClass import FixPointClass
 
 from .ApiRequest.DemLevel import DemLevel
+from ..BankLineClass.BankLineClass import BankLineClass
 
 import traceback
 
@@ -112,6 +113,8 @@ class PlotPageClass:
              QtWidgets.QPushButton, "selectStream")
         self.__showStreamButton.clicked.connect(
             lambda: self.__showStream())
+        
+        
         
      # getting parameter from first page
         self.__demLayer = firstPageClass.getDemLayer()
@@ -248,18 +251,9 @@ class PlotPageClass:
         except:
             traceback.print_exc()
 
-    def __showStream(self):
-        # get selected feature
-        selectedFeature = None
+    def __showStream(self): 
         try:
-            features = list(self.__splitLineLayer.selectedFeatures())
-            selectedFeature = features[0]
-            
-            # get selected streamName
-            streamName = selectedFeature["ReferentId"]
-            
-            # select feature which has the same id
-            self.__splitLineLayer.selectByExpression( "\"ReferentId\"='" + str(streamName) +"'")
+            BankLineClass(self.__splitLineLayer)
             
         except:
             traceback.print_exc()

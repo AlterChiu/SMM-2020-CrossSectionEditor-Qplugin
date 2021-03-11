@@ -71,7 +71,7 @@ class FirstPageClass:
             request = requests.get("https://h2-demo.pointing.tw/api/cross-sections/")
             for county in request.json():
                 countyName = str(county["name"])
-                self.__countyComboBox.addItem(countyName , "https://h2-demo.pointing.tw/api/cross-sections/" + countyName)
+                self.__countyComboBox.addItem(countyName , "https://h2-demo.pointing.tw/api/cross-sections/" + str(county["id"]))
         except:
             traceback.print_exc()
             self.__countyComboBox.addItem("連結伺服器失敗")
@@ -98,8 +98,15 @@ class FirstPageClass:
             crossSectionTemptPath = QgsProcessingUtils.tempFolder() + str("\\crossSection.json")
             try:
                 # save crossSection json to file
-                request = requests.get(self.__countyComboBox.currentData())
-                temptJson = json.loads(request.text)
+                # request = requests.get(self.__countyComboBox.currentData())
+                # temptJson = json.loads(request.text)
+                
+                
+                # test
+                temptJson = None
+                with open("K:\\Code\\QgisProject\\testCrossSection.json") as temptText:
+                    temptJson = json.load(temptText)
+                
                 self.__editCounty = self.__countyComboBox.currentText()
 
                 # make the geometry only has start and endPoint in it

@@ -50,7 +50,7 @@ class PlotPage(QtWidgets.QDialog, PlotPageClass):
         super(PlotPage, self).__init__(parent)
         self.setupUi(self)
 
-class BankLinePage(QtWidgets.QDialog, PlotPageClass):
+class BankLinePage(QtWidgets.QDialog, BankLinePageClass):
     def __init__(self, parent=None):
         super(BankLinePage, self).__init__(parent)
         self.setupUi(self)
