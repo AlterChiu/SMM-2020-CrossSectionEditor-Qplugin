@@ -5,8 +5,7 @@ from PyQt5.QtWidgets import QApplication, QPushButton, QLabel, QComboBox
 from qgis.gui import QgsFileWidget
 from qgis.core import QgsWkbTypes, QgsProcessingUtils, QgsVectorLayer, QgsProject, QgsCoordinateReferenceSystem
 
-from ..FramePage import BankLinePage
-from .PlotWidget import PlotWidgetClass
+from .PlotBankLevelWidgetClass import PlotBankLevelWidgetClass
 import requests
 import traceback
 import json
@@ -15,11 +14,10 @@ import sys
 
 
 class BankLineClass:
-    def __init__(self, selectedLayer):
+    def __init__(self, dlg, selectedLayer):
 
         # initial page
-        self.__dlg = BankLinePage()
-        self.__dlg.show()
+        self.__dlg = dlg
         self.__layer = selectedLayer
 
         # plotPoage
@@ -29,25 +27,26 @@ class BankLineClass:
         }
 
         # initial button
-        self.__leftButton = self.__dlg.findChild(QtWidgets.QPushButton, "left")
+        self.__leftButton = self.__dlg.findChild(
+            QtWidgets.QPushButton, "bankLineSelectionLeft")
         self.__leftButton.clicked.connect(lambda: self.__selectionGoLeft())
 
         self.__rightButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "right")
+            QtWidgets.QPushButton, "bankLineSelectionRight")
         self.__rightButton.clicked.connect(lambda: self.__selectionGoRight())
 
         self.__selectButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "select")
+            QtWidgets.QPushButton, "bankLineSelection")
         self.__selectButton.clicked.connect(lambda: self.__select())
 
         self.__plotButton = self.__dlg.findChild(
-            QtWidgets.QPushButton, "plot")
+            QtWidgets.QPushButton, "bankLineSelectionPlot")
         self.__plotButton.clicked.connect(lambda: self.__plot())
 
         # initial plotWidget
         self.__plotWidget = self.__dlg.findChild(
-            pyqtgraph.PlotWidget, "plotWidget")
-        self.__plotClass = PlotWidgetClass(self.__plotWidget)
+            pyqtgraph.PlotWidget, "bankLineSelectionPlotWidget")
+        self.__plotClass = PlotBankLevelWidgetClass(self.__plotWidget)
 
     # datas
         # # "collected by referntId"

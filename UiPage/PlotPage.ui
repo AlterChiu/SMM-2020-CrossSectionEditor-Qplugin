@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CrossSeciotPlotter</class>
- <widget class="QDialog" name="CrossSeciotPlotter">
+ <class>select</class>
+ <widget class="QDialog" name="select">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>878</width>
-    <height>724</height>
+    <width>1440</width>
+    <height>980</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>711</width>
-    <height>665</height>
+    <width>1440</width>
+    <height>980</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>1024</width>
-    <height>768</height>
+    <width>1440</width>
+    <height>980</height>
    </size>
   </property>
   <property name="tabletTracking">
@@ -34,9 +34,9 @@
   <widget class="QPushButton" name="replaceButton">
    <property name="geometry">
     <rect>
-     <x>440</x>
-     <y>580</y>
-     <width>81</width>
+     <x>300</x>
+     <y>530</y>
+     <width>111</width>
      <height>41</height>
     </rect>
    </property>
@@ -58,40 +58,13 @@
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="QPushButton" name="saveButton">
-   <property name="geometry">
-    <rect>
-     <x>440</x>
-     <y>630</y>
-     <width>101</width>
-     <height>71</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>微軟正黑體</family>
-     <pointsize>10</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>Save</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+S</string>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-  </widget>
   <widget class="QPushButton" name="restoreButton">
    <property name="geometry">
     <rect>
-     <x>440</x>
-     <y>530</y>
-     <width>101</width>
-     <height>41</height>
+     <x>300</x>
+     <y>580</y>
+     <width>131</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="font">
@@ -115,10 +88,10 @@
   <widget class="QTableWidget" name="editTableWidget">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>430</y>
-     <width>411</width>
-     <height>271</height>
+     <x>10</x>
+     <y>10</y>
+     <width>256</width>
+     <height>801</height>
     </rect>
    </property>
    <property name="font">
@@ -269,96 +242,20 @@
   <widget class="PlotWidget" name="plotWidget" native="true">
    <property name="geometry">
     <rect>
-     <x>70</x>
-     <y>20</y>
-     <width>731</width>
-     <height>301</height>
+     <x>320</x>
+     <y>10</y>
+     <width>1061</width>
+     <height>511</height>
     </rect>
    </property>
-   <widget class="QLineEdit" name="rightFixPointZ_2">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>520</x>
-      <y>340</y>
-      <width>71</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="rightFixPointY_2">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>340</y>
-      <width>71</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="leftFixPointZ_2">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>340</y>
-      <width>71</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="leftFixPointY_2">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>340</y>
-      <width>71</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
   </widget>
   <widget class="QPushButton" name="moveUp">
    <property name="geometry">
     <rect>
-     <x>690</x>
-     <y>500</y>
+     <x>1300</x>
+     <y>530</y>
      <width>51</width>
-     <height>51</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="font">
@@ -382,10 +279,10 @@
   <widget class="QPushButton" name="moveLeft">
    <property name="geometry">
     <rect>
-     <x>640</x>
-     <y>550</y>
+     <x>1250</x>
+     <y>570</y>
      <width>51</width>
-     <height>51</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="font">
@@ -409,10 +306,10 @@
   <widget class="QPushButton" name="moveRight">
    <property name="geometry">
     <rect>
-     <x>740</x>
-     <y>550</y>
+     <x>1350</x>
+     <y>570</y>
      <width>51</width>
-     <height>51</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="font">
@@ -436,10 +333,10 @@
   <widget class="QPushButton" name="moveDown">
    <property name="geometry">
     <rect>
-     <x>690</x>
-     <y>600</y>
+     <x>1300</x>
+     <y>570</y>
      <width>51</width>
-     <height>51</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="font">
@@ -463,9 +360,9 @@
   <widget class="QPushButton" name="addRowButton">
    <property name="geometry">
     <rect>
-     <x>440</x>
-     <y>480</y>
-     <width>101</width>
+     <x>20</x>
+     <y>820</y>
+     <width>71</width>
      <height>41</height>
     </rect>
    </property>
@@ -490,9 +387,9 @@
   <widget class="QPushButton" name="deleteRowButton">
    <property name="geometry">
     <rect>
-     <x>440</x>
-     <y>430</y>
-     <width>101</width>
+     <x>100</x>
+     <y>820</y>
+     <width>81</width>
      <height>41</height>
     </rect>
    </property>
@@ -517,8 +414,8 @@
   <widget class="QPushButton" name="ratioBRRight">
    <property name="geometry">
     <rect>
-     <x>760</x>
-     <y>350</y>
+     <x>1150</x>
+     <y>550</y>
      <width>41</width>
      <height>21</height>
     </rect>
@@ -541,8 +438,8 @@
   <widget class="QPushButton" name="ratioBRLeft">
    <property name="geometry">
     <rect>
-     <x>700</x>
-     <y>350</y>
+     <x>1090</x>
+     <y>550</y>
      <width>41</width>
      <height>21</height>
     </rect>
@@ -562,65 +459,11 @@
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="QPushButton" name="ratioBRDown">
-   <property name="geometry">
-    <rect>
-     <x>830</x>
-     <y>280</y>
-     <width>21</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>微軟正黑體</family>
-     <pointsize>16</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>︾</string>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="ratioBRUp">
-   <property name="geometry">
-    <rect>
-     <x>830</x>
-     <y>230</y>
-     <width>21</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="font">
-    <font>
-     <family>微軟正黑體</family>
-     <pointsize>16</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>︽</string>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-  </widget>
   <widget class="QPushButton" name="ratioBLLeft">
    <property name="geometry">
     <rect>
-     <x>70</x>
-     <y>350</y>
+     <x>460</x>
+     <y>550</y>
      <width>41</width>
      <height>21</height>
     </rect>
@@ -643,8 +486,8 @@
   <widget class="QPushButton" name="ratioBLRight">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>350</y>
+     <x>520</x>
+     <y>550</y>
      <width>41</width>
      <height>21</height>
     </rect>
@@ -664,59 +507,11 @@
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="QPushButton" name="ratioTRUp">
-   <property name="geometry">
-    <rect>
-     <x>830</x>
-     <y>20</y>
-     <width>21</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>微軟正黑體</family>
-     <pointsize>16</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>︽</string>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="ratioTRDown">
-   <property name="geometry">
-    <rect>
-     <x>830</x>
-     <y>70</y>
-     <width>21</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>微軟正黑體</family>
-     <pointsize>16</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>︾</string>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-  </widget>
   <widget class="QPushButton" name="moveBLLeft">
    <property name="geometry">
     <rect>
-     <x>70</x>
-     <y>330</y>
+     <x>460</x>
+     <y>530</y>
      <width>41</width>
      <height>21</height>
     </rect>
@@ -739,8 +534,8 @@
   <widget class="QPushButton" name="moveBRLeft">
    <property name="geometry">
     <rect>
-     <x>700</x>
-     <y>330</y>
+     <x>1090</x>
+     <y>530</y>
      <width>41</width>
      <height>21</height>
     </rect>
@@ -763,8 +558,8 @@
   <widget class="QPushButton" name="moveBLRight">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>330</y>
+     <x>520</x>
+     <y>530</y>
      <width>41</width>
      <height>21</height>
     </rect>
@@ -787,8 +582,8 @@
   <widget class="QPushButton" name="moveBRRight">
    <property name="geometry">
     <rect>
-     <x>760</x>
-     <y>330</y>
+     <x>1150</x>
+     <y>530</y>
      <width>41</width>
      <height>21</height>
     </rect>
@@ -808,113 +603,11 @@
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="QPushButton" name="moveBRUp">
-   <property name="geometry">
-    <rect>
-     <x>810</x>
-     <y>230</y>
-     <width>21</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="font">
-    <font>
-     <family>微軟正黑體</family>
-     <pointsize>14</pointsize>
-     <weight>50</weight>
-     <bold>false</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>↑</string>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="moveBRDown">
-   <property name="geometry">
-    <rect>
-     <x>810</x>
-     <y>280</y>
-     <width>21</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>微軟正黑體</family>
-     <pointsize>14</pointsize>
-     <weight>50</weight>
-     <bold>false</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>↓</string>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="moveTRUp">
-   <property name="geometry">
-    <rect>
-     <x>810</x>
-     <y>20</y>
-     <width>21</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>微軟正黑體</family>
-     <pointsize>14</pointsize>
-     <weight>50</weight>
-     <bold>false</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>↑</string>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="moveTRDown">
-   <property name="geometry">
-    <rect>
-     <x>810</x>
-     <y>70</y>
-     <width>21</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>微軟正黑體</family>
-     <pointsize>14</pointsize>
-     <weight>50</weight>
-     <bold>false</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>↓</string>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-  </widget>
   <widget class="QPushButton" name="replaceResolutionUpButton">
    <property name="geometry">
     <rect>
-     <x>520</x>
-     <y>580</y>
+     <x>410</x>
+     <y>530</y>
      <width>21</width>
      <height>21</height>
     </rect>
@@ -943,8 +636,8 @@
   <widget class="QPushButton" name="replaceResolutionDownButton">
    <property name="geometry">
     <rect>
-     <x>520</x>
-     <y>600</y>
+     <x>410</x>
+     <y>550</y>
      <width>21</width>
      <height>21</height>
     </rect>
@@ -973,8 +666,8 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>380</y>
+     <x>600</x>
+     <y>580</y>
      <width>131</width>
      <height>20</height>
     </rect>
@@ -997,8 +690,8 @@
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>540</x>
-     <y>380</y>
+     <x>930</x>
+     <y>580</y>
      <width>131</width>
      <height>20</height>
     </rect>
@@ -1024,8 +717,8 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>200</x>
-     <y>360</y>
+     <x>590</x>
+     <y>560</y>
      <width>71</width>
      <height>20</height>
     </rect>
@@ -1043,8 +736,8 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>280</x>
-     <y>360</y>
+     <x>670</x>
+     <y>560</y>
      <width>71</width>
      <height>20</height>
     </rect>
@@ -1062,8 +755,8 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>520</x>
-     <y>360</y>
+     <x>910</x>
+     <y>560</y>
      <width>71</width>
      <height>20</height>
     </rect>
@@ -1081,8 +774,8 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>600</x>
-     <y>360</y>
+     <x>990</x>
+     <y>560</y>
      <width>71</width>
      <height>20</height>
     </rect>
@@ -1094,218 +787,14 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QPushButton" name="moveTLDown">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>70</y>
-     <width>21</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>微軟正黑體</family>
-     <pointsize>14</pointsize>
-     <weight>50</weight>
-     <bold>false</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>↓</string>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="moveBLUp">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>230</y>
-     <width>21</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="font">
-    <font>
-     <family>微軟正黑體</family>
-     <pointsize>14</pointsize>
-     <weight>50</weight>
-     <bold>false</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>↑</string>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="ratioBLUp">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>230</y>
-     <width>21</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="font">
-    <font>
-     <family>微軟正黑體</family>
-     <pointsize>16</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>︽</string>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="ratioBLDown">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>280</y>
-     <width>21</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>微軟正黑體</family>
-     <pointsize>16</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>︾</string>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="moveTLUp">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>20</y>
-     <width>21</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>微軟正黑體</family>
-     <pointsize>14</pointsize>
-     <weight>50</weight>
-     <bold>false</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>↑</string>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="ratioTLUp">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>20</y>
-     <width>21</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>微軟正黑體</family>
-     <pointsize>16</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>︽</string>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="ratioTLDown">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>70</y>
-     <width>21</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>微軟正黑體</family>
-     <pointsize>16</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>︾</string>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="moveBLDown">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>280</y>
-     <width>21</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>微軟正黑體</family>
-     <pointsize>14</pointsize>
-     <weight>50</weight>
-     <bold>false</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>↓</string>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-  </widget>
   <widget class="QLineEdit" name="sbkleftFixPointZ">
    <property name="enabled">
     <bool>false</bool>
    </property>
    <property name="geometry">
     <rect>
-     <x>280</x>
-     <y>330</y>
+     <x>670</x>
+     <y>530</y>
      <width>71</width>
      <height>20</height>
     </rect>
@@ -1323,8 +812,8 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>520</x>
-     <y>330</y>
+     <x>910</x>
+     <y>530</y>
      <width>71</width>
      <height>20</height>
     </rect>
@@ -1342,8 +831,8 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>200</x>
-     <y>330</y>
+     <x>590</x>
+     <y>530</y>
      <width>71</width>
      <height>20</height>
     </rect>
@@ -1361,8 +850,8 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>600</x>
-     <y>330</y>
+     <x>990</x>
+     <y>530</y>
      <width>71</width>
      <height>20</height>
     </rect>
@@ -1377,8 +866,8 @@
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>370</x>
-     <y>330</y>
+     <x>760</x>
+     <y>530</y>
      <width>131</width>
      <height>20</height>
     </rect>
@@ -1401,8 +890,8 @@
   <widget class="QLabel" name="label_4">
    <property name="geometry">
     <rect>
-     <x>370</x>
-     <y>360</y>
+     <x>760</x>
+     <y>560</y>
      <width>131</width>
      <height>20</height>
     </rect>
@@ -1425,8 +914,8 @@
   <widget class="QPushButton" name="replaceLeftButton">
    <property name="geometry">
     <rect>
-     <x>70</x>
-     <y>380</y>
+     <x>460</x>
+     <y>580</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -1452,8 +941,8 @@
   <widget class="QPushButton" name="replaceRightButton">
    <property name="geometry">
     <rect>
-     <x>700</x>
-     <y>380</y>
+     <x>1090</x>
+     <y>580</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -1479,8 +968,8 @@
   <widget class="QPushButton" name="replaceMidButton">
    <property name="geometry">
     <rect>
-     <x>390</x>
-     <y>380</y>
+     <x>780</x>
+     <y>580</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -1503,13 +992,101 @@
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="QPushButton" name="selectStream">
+  <widget class="PlotWidget" name="bankLineSelectionPlotWidget" native="true">
    <property name="geometry">
     <rect>
-     <x>730</x>
-     <y>690</y>
-     <width>151</width>
-     <height>31</height>
+     <x>270</x>
+     <y>630</y>
+     <width>1141</width>
+     <height>321</height>
+    </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <widget class="QPushButton" name="bankLineSelectionLeft">
+    <property name="geometry">
+     <rect>
+      <x>990</x>
+      <y>290</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>微軟正黑體</family>
+      <pointsize>14</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>←</string>
+    </property>
+    <property name="autoDefault">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bankLineSelectionRight">
+    <property name="geometry">
+     <rect>
+      <x>1110</x>
+      <y>290</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>微軟正黑體</family>
+      <pointsize>14</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>→</string>
+    </property>
+    <property name="autoDefault">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bankLineSelection">
+    <property name="geometry">
+     <rect>
+      <x>1020</x>
+      <y>290</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>微軟正黑體</family>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>select</string>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+Shift+R</string>
+    </property>
+    <property name="autoDefault">
+     <bool>false</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="saveButton">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>870</y>
+     <width>241</width>
+     <height>81</height>
     </rect>
    </property>
    <property name="font">
@@ -1521,10 +1098,445 @@
     </font>
    </property>
    <property name="text">
-    <string>Select Stream</string>
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="bankLineSelectionPlot">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>820</y>
+     <width>71</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微軟正黑體</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>plot</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+R</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="ratioTLDown">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>90</y>
+     <width>21</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微軟正黑體</family>
+     <pointsize>16</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>︾</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="ratioBLDown">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>480</y>
+     <width>21</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微軟正黑體</family>
+     <pointsize>16</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>︾</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="moveBLDown">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>480</y>
+     <width>21</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微軟正黑體</family>
+     <pointsize>14</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>↓</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="moveTLDown">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>90</y>
+     <width>21</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微軟正黑體</family>
+     <pointsize>14</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>↓</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="ratioTLUp">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>40</y>
+     <width>21</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微軟正黑體</family>
+     <pointsize>16</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>︽</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="moveBLUp">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>430</y>
+     <width>21</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="font">
+    <font>
+     <family>微軟正黑體</family>
+     <pointsize>14</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>↑</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="moveTLUp">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>40</y>
+     <width>21</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微軟正黑體</family>
+     <pointsize>14</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>↑</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="ratioBLUp">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>430</y>
+     <width>21</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="font">
+    <font>
+     <family>微軟正黑體</family>
+     <pointsize>16</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>︽</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="ratioBRDown">
+   <property name="geometry">
+    <rect>
+     <x>1410</x>
+     <y>480</y>
+     <width>21</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微軟正黑體</family>
+     <pointsize>16</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>︾</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="moveTRDown">
+   <property name="geometry">
+    <rect>
+     <x>1390</x>
+     <y>80</y>
+     <width>21</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微軟正黑體</family>
+     <pointsize>14</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>↓</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="moveBRDown">
+   <property name="geometry">
+    <rect>
+     <x>1390</x>
+     <y>480</y>
+     <width>21</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微軟正黑體</family>
+     <pointsize>14</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>↓</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="ratioTRUp">
+   <property name="geometry">
+    <rect>
+     <x>1410</x>
+     <y>30</y>
+     <width>21</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微軟正黑體</family>
+     <pointsize>16</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>︽</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="ratioBRUp">
+   <property name="geometry">
+    <rect>
+     <x>1410</x>
+     <y>430</y>
+     <width>21</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="font">
+    <font>
+     <family>微軟正黑體</family>
+     <pointsize>16</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>︽</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="moveBRUp">
+   <property name="geometry">
+    <rect>
+     <x>1390</x>
+     <y>430</y>
+     <width>21</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="font">
+    <font>
+     <family>微軟正黑體</family>
+     <pointsize>14</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>↑</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="moveTRUp">
+   <property name="geometry">
+    <rect>
+     <x>1390</x>
+     <y>30</y>
+     <width>21</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微軟正黑體</family>
+     <pointsize>14</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>↑</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="ratioTRDown">
+   <property name="geometry">
+    <rect>
+     <x>1410</x>
+     <y>80</y>
+     <width>21</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微軟正黑體</family>
+     <pointsize>16</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>︾</string>
    </property>
    <property name="autoDefault">
     <bool>false</bool>

@@ -22,7 +22,7 @@ from .ModifyButton.ModifyButton import ModifyButtonClass
 from .FixPointClass import FixPointClass
 
 from .ApiRequest.DemLevel import DemLevel
-from ..BankLineClass.BankLineClass import BankLineClass
+from .BankLineClass.BankLineClass import BankLineClass
 
 import traceback
 
@@ -90,7 +90,6 @@ class PlotPageClass:
         self.__replaceMidButton.clicked.connect(
             lambda: self.__replaceMid())  
         
-        
         self.__addRowButton = self.__dlg.findChild(
             QtWidgets.QPushButton, "addRowButton")
         self.__addRowButton.clicked.connect(lambda: self.__addRow())
@@ -108,18 +107,14 @@ class PlotPageClass:
             QtWidgets.QPushButton, "replaceResolutionDownButton")
         self.__replaceResolutionDownButton.clicked.connect(
             lambda: self.__replaceResolutionDown())
-
-        self.__showStreamButton = self.__dlg.findChild(
-             QtWidgets.QPushButton, "selectStream")
-        self.__showStreamButton.clicked.connect(
-            lambda: self.__showStream())
-        
-        
-        
+               
      # getting parameter from first page
         self.__demLayer = firstPageClass.getDemLayer()
         self.__splitLineLayer = firstPageClass.getSplitLineLayer()
         self.__editCounty = firstPageClass.getEditorCounty()
+
+     # create bankLine leveing plotwidget
+        self.__bankLineClass = BankLineClass(self.__dlg , self.__splitLineLayer)
 
      # detect if selected geometry onchange
         # """
@@ -233,7 +228,7 @@ class PlotPageClass:
 
             # get fixPoints
             # [y,z]
-            leftFixPoint = self.__demFixPointsWidget.getLeftFixPoint.getLeftFixPoint()
+            leftFixPoint = self.__demFixPointsWidget.getLeftFixPoint()
             # [y,z]
             rightFixPoint = self.__demFixPointsWidget.getRightFixPoint()
 
@@ -251,13 +246,6 @@ class PlotPageClass:
         except:
             traceback.print_exc()
 
-    def __showStream(self): 
-        try:
-            BankLineClass(self.__splitLineLayer)
-            
-        except:
-            traceback.print_exc()
-            print("error while detecting stream river")
             
         
         

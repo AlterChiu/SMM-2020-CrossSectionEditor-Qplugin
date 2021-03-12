@@ -9,7 +9,7 @@ import statistics
 import json
 
 
-class PlotWidgetClass:
+class PlotBankLevelWidgetClass:
 
     def __init__(self, plotWidget:pyqtgraph.PlotWidget):
         self.__plotWidget = plotWidget
