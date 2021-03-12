@@ -13,6 +13,7 @@ import traceback
 import json
 
 import sys
+import os
 
 class FirstPageClass:
     def __init__(self , currentDlg):
@@ -104,7 +105,8 @@ class FirstPageClass:
                 
                 # test
                 temptJson = None
-                with open("K:\\Code\\QgisProject\\testCrossSection.json") as temptText:
+                temptPaht = os.path.dirname(__file__)
+                with open(temptPaht + "/testCrossSection.json") as temptText:
                     temptJson = json.load(temptText)
                 
                 self.__editCounty = self.__countyComboBox.currentText()
