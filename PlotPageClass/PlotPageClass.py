@@ -22,6 +22,7 @@ from .ModifyButton.ModifyButton import ModifyButtonClass
 from .FixPointClass import FixPointClass
 
 from .ApiRequest.DemLevel import DemLevel
+from .ApiRequest.Update import Update
 from .BankLineClass.BankLineClass import BankLineClass
 
 import traceback
@@ -235,21 +236,19 @@ class PlotPageClass:
             # save
             updateDate = {
                 "id": featureID,
-                "tableDate": tableData,
+                "tableData": tableData,
                 "startPoint": startPoint,
                 "endPoint": endPoint,
                 "leftFixPoint": leftFixPoint,
-                "rightFixPoint": rightFixPoint
+                "rightFixPoint": rightFixPoint,
+                "countyId": self.__editCounty
             }
-            Update.crossSection(updateDate)
+            Update.crossSection(updateDate , selectedFeature,self.__splitLineLayer)
 
         except:
             traceback.print_exc()
 
             
-        
-        
-    
     
     # plot widget
     # ------------------------------------------------------------

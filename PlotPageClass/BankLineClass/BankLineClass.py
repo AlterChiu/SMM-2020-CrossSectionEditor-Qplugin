@@ -124,7 +124,6 @@ class BankLineClass:
         # get selected streamName
         streamName = selectedFeature["ReferentId"]
         streamData = self.__initialStreamData(streamName)
-        print(streamData)
         self.__plotClass.plot(streamName, streamData)
 
     # button for slelctions

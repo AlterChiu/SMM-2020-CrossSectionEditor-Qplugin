@@ -1,16 +1,19 @@
 import requests
+import math
+import traceback
+import json
 from .DemLevel import DemLevel
 
 
 class Update:
 
     @staticmethod
-    def crossSection(object):
+    def crossSection(object , selectedFeature , selectedLayer):
 
         # {
         #     id : crossSectionID,
 
-        #     tableDate : unChecked crossSection profile,
+        #     tableData : unChecked crossSection profile,
 
         #     startPoint : the left fixPoint,
 
@@ -28,7 +31,7 @@ class Update:
             featureID = object["id"]
 
             # get table data
-            tableDate = object["tableDate"]
+            tableData = object["tableData"]
 
             # get fixPoints
             leftFixPoint = object["leftFixPoint"]  # [y,z]
@@ -66,7 +69,7 @@ class Update:
                     "endPoint": endPoint, "profile": outProfile}
             header = {"content-type": "application/json"}
             request = requests.patch("https://h2-demo.pointing.tw/api/cross-sections/" +
-                                     self.__editCounty + "/" + featureID, data=json.dumps(data), headers=header)
+                                     object["countyId"] + "/" + featureID, data=json.dumps(data), headers=header)
             print(request.text)
 
             # new id
@@ -76,7 +79,7 @@ class Update:
             # commit to layer
             selectedFeature["id"] = newID
             selectedFeature["profile"] = str(outProfile)
-            self.__splitLineLayer.updateFeature(selectedFeature)
+            selectedLayer.updateFeature(selectedFeature)
 
         except:
             traceback.print_exc()
