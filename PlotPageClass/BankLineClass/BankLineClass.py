@@ -3,7 +3,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QApplication, QPushButton, QLabel, QComboBox
 from qgis.gui import QgsFileWidget
-from qgis.core import QgsWkbTypes, QgsProcessingUtils, QgsVectorLayer, QgsProject, QgsCoordinateReferenceSystem
+from qgis.core import QgsWkbTypes, QgsProcessingUtils, QgsVectorLayer, QgsProject, QgsCoordinateReferenceSystem, QgsFeatureRequest,QgsExpression
 
 from .PlotBankLevelWidgetClass import PlotBankLevelWidgetClass
 import requests
@@ -75,19 +75,19 @@ class BankLineClass:
                     id = feature["id"]
                     profile = eval(feature["profile"])
                     distance = feature["DistanceFromReferent"]
-                    bottomLevel = min(profile, key=lambda x: x[1])[1]
+                    bottomLevel = min(profile, key=lambda x: float(x[1]))[1]
 
                     # get profile leveling
                     sortedProfile = sorted(profile, key=lambda x: x[0])
-                    minY = sortedProfile[0][0]
-                    maxY = sortedProfile[-1][0]
+                    minY = float(sortedProfile[0][0])
+                    maxY = float(sortedProfile[-1][0])
                     midY = (minY + maxY)/2
 
                     # get left/right highest level
                     leftHight = max(
-                        filter(lambda x: x[0] < midY, profile), key=lambda x: x[1])[1]
+                        filter(lambda x: float(x[0]) < midY, profile), key=lambda x: x[1])[1]
                     rightHight = max(
-                        filter(lambda x: x[0] > midY, profile), key=lambda x: x[1])[1]
+                        filter(lambda x: float(x[0]) > midY, profile), key=lambda x: x[1])[1]
 
                     # add to temptArray
                     data.append({
@@ -118,13 +118,21 @@ class BankLineClass:
         self.initialCurrentSelection()
 
         # get selectedFeature
-        features = list(self.__layer.selectedFeatures())
-        selectedFeature = features[0]
+        try:
+            features = list(self.__layer.selectedFeatures())
+            selectedFeature = features[0]
 
-        # get selected streamName
-        streamName = selectedFeature["ReferentId"]
-        streamData = self.__initialStreamData(streamName)
-        self.__plotClass.plot(streamName, streamData)
+            # get selected streamName
+            streamName = selectedFeature["ReferentId"]
+            streamData = self.__initialStreamData(streamName)
+
+            # select all crossSection on this stream
+            self.selectFeatureID(streamName, selectedFeature["id"])
+            self.__plotClass.plot(streamName, streamData)
+
+        except:
+            traceback.print_exc()
+            print("no selected feature to plot bankLine")
 
     # button for slelctions
     # ===================================================================
