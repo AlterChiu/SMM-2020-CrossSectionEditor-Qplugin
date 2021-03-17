@@ -59,15 +59,20 @@ class PlotBankLevelWidgetClass:
         #     ]
         #
     def plot(self, referentId: str , featureData):
+        
+        # clear selection
+        self.clearActive()
+        self.clearHover()
+        
+        # reset datas
         self.__featureDatas = featureData
         self.__referentId = referentId
         self.__plotWidget.setTitle(referentId)
 
+        # plot left/right/bottom level height
         self.__plotHeight()
         
-        self.plotActive(0)
-        self.clearHover()
-
+        # setting plot widget scale
         self.__labelMaxY = self.__featureDatas[-1]["leftHight"] +2
         self.__labelMinY = self.__featureDatas[-1]["leftHight"] -2
         self.__plotWidget.setXRange(

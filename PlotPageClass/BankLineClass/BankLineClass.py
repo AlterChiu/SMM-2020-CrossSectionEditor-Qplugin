@@ -3,7 +3,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QApplication, QPushButton, QLabel, QComboBox
 from qgis.gui import QgsFileWidget
-from qgis.core import QgsWkbTypes, QgsProcessingUtils, QgsVectorLayer, QgsProject, QgsCoordinateReferenceSystem, QgsFeatureRequest,QgsExpression
+from qgis.core import QgsWkbTypes, QgsProcessingUtils, QgsVectorLayer, QgsProject, QgsCoordinateReferenceSystem, QgsFeatureRequest, QgsExpression
 
 from .PlotBankLevelWidgetClass import PlotBankLevelWidgetClass
 import requests
@@ -127,8 +127,17 @@ class BankLineClass:
             streamData = self.__initialStreamData(streamName)
 
             # select all crossSection on this stream
-            self.selectFeatureID(streamName, selectedFeature["id"])
+            # self.selectFeatureID(streamName, selectedFeature["id"])
             self.__plotClass.plot(streamName, streamData)
+
+            # get the index of current selected feature
+            for index in range(0, len(streamData)):
+                if streamData[index]["id"] == selectedFeature["id"]:
+                    self.__currentSelection["activeIndex"] = index
+                    break
+                    
+            # plot the bankLine selection
+            self.__plotClass.plotActive(self.__currentSelection["activeIndex"])
 
         except:
             traceback.print_exc()
@@ -158,7 +167,7 @@ class BankLineClass:
 
     def __selectionGoLeft(self):
         currentHoverIndex = self.__currentSelection["hoverIndex"]
-        if currentHoverIndex == None:
+        if currentHoverIndex is None:
             currentHoverIndex = self.__currentSelection["activeIndex"]
 
         nextHoverIndex = currentHoverIndex-1
@@ -168,7 +177,7 @@ class BankLineClass:
 
     def __selectionGoRight(self):
         currentHoverIndex = self.__currentSelection["hoverIndex"]
-        if currentHoverIndex == None:
+        if currentHoverIndex is None:
             currentHoverIndex = self.__currentSelection["activeIndex"]
 
         nextHoverIndex = currentHoverIndex+1
@@ -178,26 +187,18 @@ class BankLineClass:
 
     # QgisLayer selection
     def selectFeatureID(self, referentId, crossSectionId):
+        streamSelections = []
 
-        # select only active crossSection
-        activeExpression = "\"ReferentId\" = \'" + referentId + \
-            "\' and \"id\" = \'" + crossSectionId + "\'"
-        activeCrossSection = self.__layer.getFeatures(
-            QgsFeatureRequest(QgsExpression(activeExpression)))
+        # get current selection
+        streamSelections.append(list(self.__layer.selectedFeatures())[0].id())
 
-        # select referent stream without active crossSection
-        referentExpression = "\"ReferentId\" = \'" + referentId + \
-            "\' and \"id\" != \'" + crossSectionId + "\'"
-        referentCrossSection = self.__layer.getFeatures(
-            QgsFeatureRequest(QgsExpression(referentExpression)))
-
-        # merge these two
-        activeIds = [i.id() for i in activeCrossSection]
-        referentIds = [i.id() for i in referentCrossSection]
-        selectedIds = activeIds + referentIds
+        # get other crossSection in this stream
+        for feature in self.__layer.getFeatures():
+            if feature["ReferentId"] == referentId and feature["id"] != crossSectionId:
+                streamSelections.append(feature.id())
 
         # selected
-        self.__layer.select(selectedIds)
+        self.__layer.select(streamSelections)
 
     def selectedReferentID(self, referentId):
 
