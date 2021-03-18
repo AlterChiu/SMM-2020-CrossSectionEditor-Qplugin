@@ -56,6 +56,7 @@ class BankLineClass:
         # [
         #     {
         #         id: id,
+        #         feature : feature,
         #         leftHight : "the highest level of the left crossSection",
         #         rightHight : "the highest level of the right crossSection",
         #         bottom : "the lowest level of the crossSection",
@@ -92,6 +93,7 @@ class BankLineClass:
                     # add to temptArray
                     data.append({
                         "id": id,
+                        "feature":feature,
                         "leftHight": leftHight,
                         "rightHight": rightHight,
                         "bottomHight": bottomLevel,
@@ -148,22 +150,24 @@ class BankLineClass:
 
     def __select(self):
         currentHoverIndex = self.__currentSelection["hoverIndex"]
-        if currentHoverIndex != None:
+        if currentHoverIndex is not None:
 
             # get id from plotWidget by index
-            selectId = self.__plotClass.getSelectedId(currentHoverIndex)
-            referentId = self.__plotClass.getReferentId()
+            selectedFeature = self.__plotClass.getSelectedFeatureByIndex(currentHoverIndex)
 
-            if selectedID != None and referentId != None:
+            if selectedFeature is not None:
 
                 # plot widget
                 self.__plotClass.plotActive(currentHoverIndex)
                 self.__plotClass.clearHover()
 
                 # modify privat constant
-                self.selectFeatureID(referentId, selectId)
                 self.__currentSelection["activeIndex"] = currentHoverIndex
-                self.__currentSelection["activeIndex"] = self.__currentSelection["hoverIndex"]
+                self.__currentSelection["hoverIndex"] = None
+
+                # selected
+                self.__layer.removeSelection()
+                self.__layer.select(selectedFeature["feature"].id())
 
     def __selectionGoLeft(self):
         currentHoverIndex = self.__currentSelection["hoverIndex"]
@@ -198,10 +202,5 @@ class BankLineClass:
                 streamSelections.append(feature.id())
 
         # selected
+        self.__layer.removeSelection()
         self.__layer.select(streamSelections)
-
-    def selectedReferentID(self, referentId):
-
-        # select referent stream without active crossSection
-        referentExpression = "\"ReferentId\" = \'" + referentId + "\'"
-        self.__layer.selectByExpression(referentExpression)

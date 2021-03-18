@@ -63,6 +63,29 @@ class PlotPageClass:
         # modify buttons
         self.__modifyButtons = ModifyButtonClass(dlg, self.__tableClass)
 
+        # set crossSection plot widget lable
+        self.__crossSectionSbkLable = self.__dlg.findChild(
+            QtWidgets.QLabel, "CrossSectionSbkLable")
+        self.__crossSectionSbkLable.setStyleSheet("color : blue")
+
+        self.__crossSectionDemLable = self.__dlg.findChild(
+            QtWidgets.QLabel, "CrossSectionDemLable")
+        self.__crossSectionDemLable.setStyleSheet("color : red")
+
+        # set bankLine plot widget lable
+        self.__bankLineLeftLable = self.__dlg.findChild(
+            QtWidgets.QLabel, "BankLineLeftLable")
+        self.__bankLineLeftLable.setStyleSheet("color : green")
+
+        self.__bankLineRightLable = self.__dlg.findChild(
+            QtWidgets.QLabel, "BankLineRightLable")
+        self.__bankLineRightLable.setStyleSheet("color : pink")
+
+        self.__bankLineBottomLable = self.__dlg.findChild(
+            QtWidgets.QLabel, "BankLineBottomLable")
+        self.__bankLineBottomLable.setStyleSheet("color : blue")
+
+
         self.__saveButton = self.__dlg.findChild(
             QtWidgets.QPushButton, "saveButton")
         self.__saveButton.clicked.connect(lambda: self.__save())

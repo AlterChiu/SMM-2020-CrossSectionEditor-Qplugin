@@ -30,6 +30,7 @@ class PlotWidgetClass:
         self.__plotWidget.setLabel(
             "bottom", "Distance(m)", **self.__labelStyle)
 
+
         # set line values
         # dataLine = [[[Vx1....Vxn] , [Vy1....Vyn] ], [[Wx1....Wxn],[Wy1....Wyn]].....]
         self.__data = {

@@ -1,6 +1,7 @@
 import pyqtgraph as pyqtgraph
 from pyqtgraph import PlotWidget, plot
 from PyQt5 import QtCore
+from PyQt5.QtGui import QColor
 
 # system py
 import sys
@@ -32,8 +33,6 @@ class PlotBankLevelWidgetClass:
             "font-size": "16px",
         }
         self.__plotWidget.setLabel('left', "Level(m)", **self.__labelStyle)
-        self.__plotWidget.setLabel(
-            "bottom", "Index", **self.__labelStyle)
 
         self.__line = {
             "leftHight": None,
@@ -51,6 +50,7 @@ class PlotBankLevelWidgetClass:
         #     [
         #         {
         #             id: id,
+        #             feature: feature,
         #             leftHight : "the highest level of the left crossSection",
         #             rightHight : "the highest level of the right crossSection",
         #             bottom : "the lowest level of the crossSection",
@@ -85,7 +85,7 @@ class PlotBankLevelWidgetClass:
     def __plotHeight(self):
         self.__clearHeight()
         color = {
-            "leftHight": "k",
+            "leftHight": "g",
             "rightHight": "m",
             "bottomHight": "b"
         }
@@ -168,7 +168,7 @@ class PlotBankLevelWidgetClass:
     def __plotSelection(self, index: int, selectedType: str):
         color = {
             "activeLine": "r",
-            "hoverLine": "y"
+            "hoverLine": QColor(245, 205, 22)
         }
 
         try:
@@ -209,16 +209,16 @@ class PlotBankLevelWidgetClass:
 
     # public
     #=====================================================================
-    def getCrossSectionSize(self) -> int:
+    def getCrossSectionSize(self)->int:
         try:
-            return len(self.__featureDatas[self.__referentId])
+            return len(self.__featureDatas)
         except:
             return 0
     
     def getReferentId(self):
         return self.__referentId
 
-    def getSelectedId(self , index):
+    def getSelectedFeatureByIndex(self , index):
         try:
             return self.__featureDatas[index]
         except:
