@@ -24,6 +24,7 @@ from .FixPointClass import FixPointClass
 from .ApiRequest.DemLevel import DemLevel
 from .ApiRequest.Update import Update
 from .BankLineClass.BankLineClass import BankLineClass
+from .plugins.SimilarityClass import SimilarityClass
 
 import traceback
 
@@ -85,7 +86,6 @@ class PlotPageClass:
             QtWidgets.QLabel, "BankLineBottomLable")
         self.__bankLineBottomLable.setStyleSheet("color : blue")
 
-
         self.__saveButton = self.__dlg.findChild(
             QtWidgets.QPushButton, "saveButton")
         self.__saveButton.clicked.connect(lambda: self.__save())
@@ -103,17 +103,17 @@ class PlotPageClass:
             QtWidgets.QPushButton, "replaceLeftButton")
         self.__replaceLeftButton.clicked.connect(
             lambda: self.__replaceLeft())
-        
+
         self.__replaceRightButton = self.__dlg.findChild(
             QtWidgets.QPushButton, "replaceRightButton")
         self.__replaceRightButton.clicked.connect(
             lambda: self.__replaceRight())
-        
+
         self.__replaceMidButton = self.__dlg.findChild(
             QtWidgets.QPushButton, "replaceMidButton")
         self.__replaceMidButton.clicked.connect(
-            lambda: self.__replaceMid())  
-        
+            lambda: self.__replaceMid())
+
         self.__addRowButton = self.__dlg.findChild(
             QtWidgets.QPushButton, "addRowButton")
         self.__addRowButton.clicked.connect(lambda: self.__addRow())
@@ -131,14 +131,17 @@ class PlotPageClass:
             QtWidgets.QPushButton, "replaceResolutionDownButton")
         self.__replaceResolutionDownButton.clicked.connect(
             lambda: self.__replaceResolutionDown())
-               
+
+        self.__similiarScore = self.__dlg.findChild(
+            QtWidgets.QLabel, "QtWidgets")
+
      # getting parameter from first page
         self.__demLayer = firstPageClass.getDemLayer()
         self.__splitLineLayer = firstPageClass.getSplitLineLayer()
         self.__editCounty = firstPageClass.getEditorCounty()
 
      # create bankLine leveing plotwidget
-        self.__bankLineClass = BankLineClass(self.__dlg , self.__splitLineLayer)
+        self.__bankLineClass = BankLineClass(self.__dlg, self.__splitLineLayer)
 
      # detect if selected geometry onchange
         # """
@@ -170,9 +173,9 @@ class PlotPageClass:
                          self.__currentDemPoints)), resolution=resolution)
 
             # normalize currentDemPoints by dy
-            maxDy = max(xyzList, key=lambda point: point["dy"])["dy"]
-            minDy = min(xyzList, key=lambda point: point["dy"])["dy"]
-            midDy = round((maxDy + minDy)/2, 2)
+            maxDy = max(self.__currentDemPoints, key=lambda point: point[2])[2]
+            minDy = min(self.__currentDemPoints, key=lambda point: point[2])[2]
+            midDy = (maxDy + minDy)/2
 
             # out
             for point in xyzList:
@@ -182,7 +185,7 @@ class PlotPageClass:
                     tableValues.append(
                         [point["x"], point["y"], normalizeDy, point["z"]])
 
-            self.__tableClass.replace(sorted(tableValues,key=lambda x:x[2]))
+            self.__tableClass.replace(sorted(tableValues, key=lambda x: x[2]))
         except:
             traceback.print_exc(file=sys.stdout)
             print("replace error")
@@ -191,28 +194,31 @@ class PlotPageClass:
         try:
             maxL = float(self.__sbkFixPointsWidget.getLeftFixPoint()[0])
             minL = float(self.__demFixPointsWidget.getLeftFixPoint()[0])
-            self.__replace(resolution=self.__rasterReplaceResolution , minL=minL , maxL=maxL)
+            self.__replace(
+                resolution=self.__rasterReplaceResolution, minL=minL, maxL=maxL)
         except:
             traceback.print_exc()
             pass
-        
+
     def __replaceRight(self):
         try:
             minL = float(self.__sbkFixPointsWidget.getRightFixPoint()[0])
             maxL = float(self.__demFixPointsWidget.getRightFixPoint()[0])
-            self.__replace(resolution=self.__rasterReplaceResolution , minL=minL , maxL=maxL)
+            self.__replace(
+                resolution=self.__rasterReplaceResolution, minL=minL, maxL=maxL)
         except:
             traceback.print_exc()
             pass
-        
+
     def __replaceMid(self):
         try:
             minL = float(self.__sbkFixPointsWidget.getLeftFixPoint()[0])
             maxL = float(self.__sbkFixPointsWidget.getRightFixPoint()[0])
-            self.__replace(resolution=self.__rasterReplaceResolution , minL=minL , maxL=maxL)
+            self.__replace(
+                resolution=self.__rasterReplaceResolution, minL=minL, maxL=maxL)
         except:
             pass
-    
+
     def __addRow(self):
         self.__tableClass.addNewRow()
 
@@ -266,19 +272,20 @@ class PlotPageClass:
                 "rightFixPoint": rightFixPoint,
                 "countyId": self.__editCounty
             }
-            Update.crossSection(updateDate , selectedFeature,self.__splitLineLayer)
+            Update.crossSection(updateDate, selectedFeature,
+                                self.__splitLineLayer)
 
         except:
             traceback.print_exc()
 
-            
-    
     # plot widget
     # ------------------------------------------------------------
+
     def __reFreshPlotWidget(self):
         # clear plot widge
         self.__clearPlotPage()
         self.__currentDemPoints.clear()
+        self.__similiarScore.setText("0")
 
         # get geometry
         featureList = []
@@ -297,7 +304,8 @@ class PlotPageClass:
         if len(featureList) > 0:
 
             # plot primary line
-            for point in DemLevel.getRasterValue(featureList[0].geometry()):
+            demPoints = DemLevel.getRasterValue(featureList[0].geometry())
+            for point in demPoints:
                 self.__currentDemPoints.append(
                     [point["x"], point["y"], point["dy"], point["z"]])
 
@@ -312,6 +320,11 @@ class PlotPageClass:
             geometryValueList = list(
                 map(lambda point: [point[2], point[3]], self.__currentDemPoints))
             self.__plotClass.addDataPrimary(geometryValueList)
+
+            # plot similiarScore
+            similiareScor = SimilarityClass(selectedFeature, map(
+                lambda point: [point["dy"], point["z"]], demPoints))
+            self.__similiarScore.setText(str(similiareScor.SimilarityCompare()))
 
         # plot sbkCrossSection
             self.__plotSBK(selectedFeature)
@@ -329,11 +342,10 @@ class PlotPageClass:
                 # data format : [[x1,y1],[x2,y2]....[xn,yn]]
                 yzLine = json.loads(featureList[index]["profile"])
                 self.__plotClass.addDataSecondary(yzLine)
-                
+
                 # normalize the yzLine, to make centerX to 0
                 # data format : [[[x1,x2...xn] , [y1,y2.....yn]]]
                 yzLine = self.__plotClass.dataNormalize(yzLine)
-                
 
         # set title
         try:

@@ -170,8 +170,6 @@ class FirstPageClass:
             self.__dlg = PlotPage()
             self.__dlg.show()
 
-
-
             # create plotPageClass
             PlotPageClass(self.__dlg , self)
 
