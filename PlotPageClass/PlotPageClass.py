@@ -133,7 +133,7 @@ class PlotPageClass:
             lambda: self.__replaceResolutionDown())
 
         self.__similiarScore = self.__dlg.findChild(
-            QtWidgets.QLabel, "QtWidgets")
+            QtWidgets.QLabel, "similiarScore")
 
      # getting parameter from first page
         self.__demLayer = firstPageClass.getDemLayer()
@@ -280,7 +280,6 @@ class PlotPageClass:
 
     # plot widget
     # ------------------------------------------------------------
-
     def __reFreshPlotWidget(self):
         # clear plot widge
         self.__clearPlotPage()
@@ -322,8 +321,8 @@ class PlotPageClass:
             self.__plotClass.addDataPrimary(geometryValueList)
 
             # plot similiarScore
-            similiareScor = SimilarityClass(selectedFeature, map(
-                lambda point: [point["dy"], point["z"]], demPoints))
+            similiareScor = SimilarityClass(selectedFeature, list(map(
+                lambda point: [point["dy"], point["z"]], demPoints)))
             self.__similiarScore.setText(str(similiareScor.SimilarityCompare()))
 
         # plot sbkCrossSection
