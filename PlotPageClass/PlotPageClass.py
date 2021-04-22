@@ -23,6 +23,7 @@ from .FixPointClass import FixPointClass
 
 from .ApiRequest.DemLevel import DemLevel
 from .ApiRequest.Update import Update
+from .ApiRequest.Create import Create
 from .BankLineClass.BankLineClass import BankLineClass
 from .plugins.SimilarityClass import SimilarityClass
 
@@ -152,8 +153,67 @@ class PlotPageClass:
             lambda: self.__reFreshPlotWidget())
         # """
 
+        # detect if selected layer add new feature
+        self.__splitLineLayer.featureAdded.connect(lambda: self.__featureAdd())
     # dialog functions
     # -----------------------------------------------------------
+
+    def __featureAdd(self, fid):
+
+        # disconnect selection
+        self.__splitLineLayer.selectionChanged.disconnect(
+            lambda: self.__reFreshPlotWidget())
+
+        # select feature
+        self.__splitLineLayer.select(fid)
+        try:
+            features = list(self.__splitLineLayer.selectedFeatures())
+            selectedFeature = features[0]
+
+        # get selected geometry
+            geometry = selectedFeature.geometry()
+            temptVertices = list(geometry.vertices())
+
+        # change attribute table
+
+            # startPoint
+            startPoint = [temptVertices[0].x(), temptVertices[0].y()]
+            startPointTid = selectedFeature.fields().indexFromName("start-point")
+            self.__splitLineLayer.changeAttributeValue(
+                fid, startPointTid, startPoint)
+
+            # endPoint
+            endPoint = [temptVertices[1].x(), temptVertices[1].y()]
+            endPointTid = selectedFeature.fields().indexFromName("end-point")
+            self.__splitLineLayer.changeAttributeValue(
+                fid, endPointTid, endPoint)
+
+            # profile
+            demPoints = DemLevel.getRasterValue(geometry)
+            profile = list(map(lambda point: [point[2], point[3]], demPoints))
+            profileTid = selectedFeature.fields().indexFromName("profile")
+            self.__splitLineLayer.changeAttributeValue(
+                fid, profileTid, profile)
+
+        # commint change
+            self.__splitLineLayer.commintChanges()
+            self.__splitLineLayer.startEditing()
+
+        # remove selection feature
+            self.__splitLineLayer.removeSelection()
+            
+        # update to webservice
+            Create.createCrossSection(startPoint , endPoint , profile , self.__editCounty)
+            
+        except:
+            print("create fail")
+
+        # reconnect selectionChange method
+        self.__splitLineLayer.selectionChanged.connect(
+            lambda: self.__reFreshPlotWidget())
+
+        print("feature added")
+
     def __restore(self):
         self.__reFreshPlotWidget()
 
@@ -170,7 +230,7 @@ class PlotPageClass:
             # data format : [{"x":x , "y":y , "dy" :dy ,"z":z}]
             xyzList = DemLevel.wrapXYZResolution(
                 list(map(lambda point: {"x": point[0], "y": point[1], "dy": point[2], "z": point[3]},
-                         self.__currentDemPoints)), resolution=resolution)
+                         self.__currentDemPoints)), resolution=resolution/2.0)
 
             # normalize currentDemPoints by dy
             maxDy = max(self.__currentDemPoints, key=lambda point: point[2])[2]
@@ -323,7 +383,8 @@ class PlotPageClass:
             # plot similiarScore
             similiareScor = SimilarityClass(selectedFeature, list(map(
                 lambda point: [point["dy"], point["z"]], demPoints)))
-            self.__similiarScore.setText(str(similiareScor.SimilarityCompare()))
+            self.__similiarScore.setText(
+                str(similiareScor.SimilarityCompare()))
 
         # plot sbkCrossSection
             self.__plotSBK(selectedFeature)

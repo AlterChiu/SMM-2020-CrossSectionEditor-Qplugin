@@ -71,8 +71,8 @@ class FirstPageClass:
         try:
             request = requests.get("https://h2-demo.pointing.tw/api/cross-sections/")
             for county in request.json():
-                countyName = str(county["name"])
-                self.__countyComboBox.addItem(countyName , str(county["id"]))
+                countyName = str(county["basinName"])
+                self.__countyComboBox.addItem(countyName , str(county["basinId"]))
         except:
             traceback.print_exc()
             self.__countyComboBox.addItem("連結伺服器失敗")

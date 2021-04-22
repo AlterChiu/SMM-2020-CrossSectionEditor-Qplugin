@@ -6,7 +6,7 @@ from .DemLevel import DemLevel
 
 
 class Update:
-
+    
     @staticmethod
     def crossSection(object , selectedFeature , selectedLayer):
 
@@ -70,7 +70,7 @@ class Update:
             header = {"content-type": "application/json"}
             request = requests.patch("https://h2-demo.pointing.tw/api/cross-sections/" +
                                      object["countyId"] + "/" + featureID, data=json.dumps(data), headers=header)
-            print(json.dumps(data))
+            print("crossSection: " + str(json.dumps(data)))
 
             # new id
             newID = "X" + str(int((startPoint[0] + endPoint[0])/2)) + \
