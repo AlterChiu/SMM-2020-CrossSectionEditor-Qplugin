@@ -11,6 +11,7 @@ from ..PlotPageClass.PlotPageClass import PlotPageClass
 import requests
 import traceback
 import json
+import pathlib
 
 import sys
 import os
@@ -105,8 +106,8 @@ class FirstPageClass:
                 
                 # test
                 temptJson = None
-                temptPaht = os.path.dirname(__file__)
-                with open(temptPaht + "/testCrossSection.json") as temptText:
+                temptPath = os.path.dirname(__file__)
+                with open(temptPath + "/testCrossSection.json") as temptText:
                     temptJson = json.load(temptText)
                 
                 self.__editCounty = self.__countyComboBox.currentData()
@@ -152,6 +153,7 @@ class FirstPageClass:
                 # load tempt jsonFile as layer
                 self.__splitLineLayer = QgsVectorLayer(crossSectionTemptPath,"crossSection" , "ogr")
                 self.__splitLineLayer.setCrs(QgsCoordinateReferenceSystem(3826),True)
+                self.__splitLineLayer.loadNamedStyle(temptPath + '/style/crossSectionStyle.qml')
                 QgsProject.instance().addMapLayer(self.__splitLineLayer)
 
             except:

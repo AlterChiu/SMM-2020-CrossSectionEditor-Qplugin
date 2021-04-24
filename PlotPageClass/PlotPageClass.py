@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QApplication, QPushButton, QLabel, QComboBox
 
 # qgis py
 from qgis.gui import QgsFileWidget
-from qgis.core import QgsWkbTypes, QgsPointXY, QgsRaster
+from qgis.core import QgsWkbTypes, QgsPointXY, QgsRaster, QgsFeatureRequest
 from qgis.utils import iface
 import pyqtgraph as pyqtgraph
 import json
@@ -24,6 +24,7 @@ from .FixPointClass import FixPointClass
 from .ApiRequest.DemLevel import DemLevel
 from .ApiRequest.Update import Update
 from .ApiRequest.Create import Create
+from .ApiRequest.Delete import Delete
 from .BankLineClass.BankLineClass import BankLineClass
 from .plugins.SimilarityClass import SimilarityClass
 
@@ -148,24 +149,26 @@ class PlotPageClass:
         # """
         self.__splitLineLayer.startEditing()
         self.__splitLineLayer.selectionChanged.connect(
-            lambda: self.__reFreshPlotWidget())
+            self.__reFreshPlotWidget)
         self.__splitLineLayer.geometryChanged.connect(
-            lambda: self.__reFreshPlotWidget())
+            self.__reFreshPlotWidget)
         # """
 
         # detect if selected layer add new feature
-        self.__splitLineLayer.featureAdded.connect(lambda: self.__featureAdd())
+        self.__splitLineLayer.featureAdded.connect(self.__featureAdd)
+        self.__splitLineLayer.featureDeleted.connect(self.__featureDelete)
     # dialog functions
     # -----------------------------------------------------------
 
-    def __featureAdd(self, fid):
+    def __featureAdd(self, fId):
 
         # disconnect selection
         self.__splitLineLayer.selectionChanged.disconnect(
-            lambda: self.__reFreshPlotWidget())
+            self.__reFreshPlotWidget)
 
         # select feature
-        self.__splitLineLayer.select(fid)
+        self.__splitLineLayer.removeSelection()
+        self.__splitLineLayer.select(fId)
         try:
             features = list(self.__splitLineLayer.selectedFeatures())
             selectedFeature = features[0]
@@ -174,45 +177,70 @@ class PlotPageClass:
             geometry = selectedFeature.geometry()
             temptVertices = list(geometry.vertices())
 
-        # change attribute table
-
+        # get feature properties
             # startPoint
             startPoint = [temptVertices[0].x(), temptVertices[0].y()]
-            startPointTid = selectedFeature.fields().indexFromName("start-point")
-            self.__splitLineLayer.changeAttributeValue(
-                fid, startPointTid, startPoint)
 
             # endPoint
             endPoint = [temptVertices[1].x(), temptVertices[1].y()]
-            endPointTid = selectedFeature.fields().indexFromName("end-point")
-            self.__splitLineLayer.changeAttributeValue(
-                fid, endPointTid, endPoint)
 
             # profile
             demPoints = DemLevel.getRasterValue(geometry)
-            profile = list(map(lambda point: [point[2], point[3]], demPoints))
+            profile = list(
+                map(lambda point: [point["dy"], point["z"]], demPoints))
+
+        # update to webservice
+            newID = Create.createCrossSection(
+                startPoint, endPoint, profile, self.__editCounty)
+
+        # change attribute table
+
+            # startPoint
+            startPointTid = selectedFeature.fields().indexFromName("start-point")
+            self.__splitLineLayer.changeAttributeValue(
+                fId, startPointTid, str(startPoint))
+
+            # endPoint
+            endPointTid = selectedFeature.fields().indexFromName("end-point")
+            self.__splitLineLayer.changeAttributeValue(
+                fId, endPointTid, str(endPoint))
+
+            # profile
             profileTid = selectedFeature.fields().indexFromName("profile")
             self.__splitLineLayer.changeAttributeValue(
-                fid, profileTid, profile)
+                fId, profileTid, str(profile))
 
-        # commint change
-            self.__splitLineLayer.commintChanges()
-            self.__splitLineLayer.startEditing()
+            # crossSectionID
+            idTid = selectedFeature.fields().indexFromName("id")
+            self.__splitLineLayer.changeAttributeValue(
+                fId, idTid, newID)
 
         # remove selection feature
             self.__splitLineLayer.removeSelection()
-            
-        # update to webservice
-            Create.createCrossSection(startPoint , endPoint , profile , self.__editCounty)
-            
+
+            print("feature create")
         except:
+
+            traceback.print_exc()
             print("create fail")
 
         # reconnect selectionChange method
+        print("connect")
         self.__splitLineLayer.selectionChanged.connect(
-            lambda: self.__reFreshPlotWidget())
+            self.__reFreshPlotWidget)
 
-        print("feature added")
+        try:
+            self.__splitLineLayer.select(fId)
+        except:
+            pass
+
+    def __featureDelete(self, fId):
+        feature = list(self.__splitLineLayer.dataProvider().getFeatures(
+            QgsFeatureRequest([fId])))[0]
+
+        deletedCrossSectionId = feature["id"]
+        print(deletedCrossSectionId)
+        Delete.deleteCrossSection(self.__editCounty, deletedCrossSectionId)
 
     def __restore(self):
         self.__reFreshPlotWidget()

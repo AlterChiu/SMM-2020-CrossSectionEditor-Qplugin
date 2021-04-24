@@ -17,7 +17,16 @@ class Create:
         try:
             request = requests.post(
                 "https://h2-demo.pointing.tw/api/cross-sections/" + region, data=json.dumps(requestBody), headers=header, timeout=3)
-            
-            return "testCrossSection"
+
+            if request.status_code == requests.codes.ok:
+
+                # request jsonObject
+                crossSectionID = json.loads(request.text)[
+                    "features"][1]["properties"]["id"]
+                print("return ID:" + str(crossSectionID))
+                return str(crossSectionID)
+            else:
+                return "testCrossSection"
+
         except:
-            return "testCrossSection"       
+            return "testCrossSection"
