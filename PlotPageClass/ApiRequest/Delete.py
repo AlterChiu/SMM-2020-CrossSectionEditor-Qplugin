@@ -11,7 +11,7 @@ class Delete:
 
         try:
             request = requests.delete(
-                "https://h2-demo.pointing.tw/api/cross-sections/" + region + "/" + crossSectionId, headers=header, timeout=3)
+                "http://192.168.50.78:8080/api/cross-sections/" + region + "/" + crossSectionId, headers=header, timeout=3)
 
             if request.status_code == requests.codes.ok:
                 print("delecte sussecces")

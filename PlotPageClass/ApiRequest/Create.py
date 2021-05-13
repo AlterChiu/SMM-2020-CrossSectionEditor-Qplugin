@@ -16,7 +16,7 @@ class Create:
 
         try:
             request = requests.post(
-                "https://h2-demo.pointing.tw/api/cross-sections/" + region, data=json.dumps(requestBody), headers=header, timeout=3)
+                "http://192.168.50.78:8080/api/cross-sections/" + region, data=json.dumps(requestBody), headers=header, timeout=3)
 
             if request.status_code == requests.codes.ok:
 

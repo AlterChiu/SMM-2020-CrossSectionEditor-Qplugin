@@ -70,7 +70,7 @@ class FirstPageClass:
     def __initialCountyComboBox(self):
         self.__countyComboBox.clear()
         try:
-            request = requests.get("https://h2-demo.pointing.tw/api/cross-sections/")
+            request = requests.get("http://192.168.50.78:8080/api/cross-sections/")
             for county in request.json():
                 countyName = str(county["basinName"])
                 self.__countyComboBox.addItem(countyName , str(county["basinId"]))
@@ -100,52 +100,57 @@ class FirstPageClass:
             crossSectionTemptPath = QgsProcessingUtils.tempFolder() + str("\\crossSection.json")
             try:
                 # save crossSection json to file
-                # request = requests.get("https://h2-demo.pointing.tw/api/cross-sections/" + self.__countyComboBox.currentData())
-                # temptJson = json.loads(request.text)
-                
+                request = requests.get("http://192.168.50.78:8080/api/cross-sections/" + self.__countyComboBox.currentData())
+                temptJson = json.loads(request.text)
+                temptPath = os.path.dirname(__file__)
                 
                 # test
+                '''
                 temptJson = None
                 temptPath = os.path.dirname(__file__)
                 with open(temptPath + "/testCrossSection.json") as temptText:
                     temptJson = json.load(temptText)
-                
+                '''
                 self.__editCounty = self.__countyComboBox.currentData()
 
                 # make the geometry only has start and endPoint in it
                 for feature in temptJson["features"]:
-                    temptGeometryPoints = feature["geometry"]["coordinates"]
-                    
-                    # outList, add a buffer to start-end point (each side for 3m)
-                    outGeometryPoints =[]
-                    startPoint = temptGeometryPoints[0]
-                    endPoint = temptGeometryPoints[-1]
-                    geometryLength = pow(pow(startPoint[0] - endPoint[0] ,2) + pow(startPoint[1] - endPoint[1] ,2),0.5)
+                    try:
+                        print(feature["properties"]["id"])
+                        temptGeometryPoints = feature["geometry"]["coordinates"]
+                        
+                        # outList, add a buffer to start-end point (each side for 3m)
+                        outGeometryPoints =[]
+                        startPoint = temptGeometryPoints[0]
+                        endPoint = temptGeometryPoints[-1]
+                        print(startPoint[0],endPoint[0])
+                        geometryLength = pow(pow(startPoint[0] - endPoint[0] ,2) + pow(startPoint[1] - endPoint[1] ,2),0.5)
 
-                    startDirection = [(startPoint[0]-endPoint[0])*(3.0/geometryLength) , (startPoint[1]-endPoint[1])*(3.0/geometryLength)]
-                    endDirection = [startDirection[0]*-1 , startDirection[1]*-1]
+                        startDirection = [(startPoint[0]-endPoint[0])*(3.0/geometryLength) , (startPoint[1]-endPoint[1])*(3.0/geometryLength)]
+                        endDirection = [startDirection[0]*-1 , startDirection[1]*-1]
 
-                    outGeometryPoints.append([startPoint[0]+startDirection[0] , startPoint[1]+startDirection[1]])
-                    outGeometryPoints.append([endPoint[0]+endDirection[0] , endPoint[1]+endDirection[1]])
-                    feature["geometry"]["coordinates"] = outGeometryPoints
+                        outGeometryPoints.append([startPoint[0]+startDirection[0] , startPoint[1]+startDirection[1]])
+                        outGeometryPoints.append([endPoint[0]+endDirection[0] , endPoint[1]+endDirection[1]])
+                        feature["geometry"]["coordinates"] = outGeometryPoints
 
-                    # remove not necessary feild
-                    try:
-                        del feature["properties"]["originalId"]
-                    except:
-                        pass
-                    try:
-                        del feature["properties"]["node_py"]
-                    except:
-                        pass
-                    try:
-                        del feature["properties"]["node_px"]
-                    except:
-                        pass
-                    try:
-                        del feature["properties"]["node_nm"]
-                    except:
-                        pass
+                        # remove not necessary feild
+                        try:
+                            del feature["properties"]["originalId"]
+                        except:
+                            pass
+                        try:
+                            del feature["properties"]["node_py"]
+                        except:
+                            pass
+                        try:
+                            del feature["properties"]["node_px"]
+                        except:
+                            pass
+                        try:
+                            del feature["properties"]["node_nm"]
+                        except:
+                            pass
+                    except:pass
                     
                 # write json to temptFile
                 writer = AtFileWriter(json.dumps(temptJson), crossSectionTemptPath).textWriter("")

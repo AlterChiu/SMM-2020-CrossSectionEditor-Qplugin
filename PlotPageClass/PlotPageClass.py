@@ -346,9 +346,9 @@ class PlotPageClass:
 
             # get fixPoints
             # [y,z]
-            leftFixPoint = self.__demFixPointsWidget.getLeftFixPoint()
+            leftFixPoint = self.__sbkFixPointsWidget.getLeftFixPoint()
             # [y,z]
-            rightFixPoint = self.__demFixPointsWidget.getRightFixPoint()
+            rightFixPoint = self.__sbkFixPointsWidget.getRightFixPoint()
 
             # save
             updateDate = {
