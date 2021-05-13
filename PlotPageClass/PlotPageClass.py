@@ -548,8 +548,8 @@ class PlotPageClass:
         self.__rasterReplaceResolution = self.__rasterDetectLength
 
         # clear fixPoint widget
-        self.__demFixPointsWidget.clear()
-        self.__demFixPointsWidget.blockTextEdit()
+        self.__sbkFixPointsWidget.clear()
+        self.__sbkFixPointsWidget.blockTextEdit()
 
     # -------------------------------------READ RASTER PIXEL FROM FROM DEMLAYER----------------------------------
     # def __getRasterSize(self):
