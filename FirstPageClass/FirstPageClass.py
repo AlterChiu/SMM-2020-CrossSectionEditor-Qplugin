@@ -24,7 +24,6 @@ class FirstPageClass:
 
         self.__nextButton = currentDlg.findChild(QtWidgets.QPushButton , "NextButton")
 
-
         # initial comboBox
         self.__initialDemComboBox()
         self.__initialCountyComboBox()
@@ -71,6 +70,8 @@ class FirstPageClass:
         self.__countyComboBox.clear()
         try:
             request = requests.get("http://192.168.50.78:8080/api/cross-sections/")
+            request1 = requests.get("https://h2-demo.pointing.tw/service/dem/profile?resolution=1")
+
             for county in request.json():
                 countyName = str(county["basinName"])
                 self.__countyComboBox.addItem(countyName , str(county["basinId"]))
@@ -116,14 +117,11 @@ class FirstPageClass:
                 # make the geometry only has start and endPoint in it
                 for feature in temptJson["features"]:
                     try:
-                        print(feature["properties"]["id"])
                         temptGeometryPoints = feature["geometry"]["coordinates"]
-                        
                         # outList, add a buffer to start-end point (each side for 3m)
                         outGeometryPoints =[]
                         startPoint = temptGeometryPoints[0]
                         endPoint = temptGeometryPoints[-1]
-                        print(startPoint[0],endPoint[0])
                         geometryLength = pow(pow(startPoint[0] - endPoint[0] ,2) + pow(startPoint[1] - endPoint[1] ,2),0.5)
 
                         startDirection = [(startPoint[0]-endPoint[0])*(3.0/geometryLength) , (startPoint[1]-endPoint[1])*(3.0/geometryLength)]

@@ -34,7 +34,7 @@ class DemLevel:
             }
             header = {"content-type": "application/json"}
             request = requests.post(
-                "https://h2-demo.pointing.tw/service/dem/profile?resolution=1", data=json.dumps(pointJson), headers=header, timeout=3)
+                "https://h2-demo.pointing.tw/service/dem33/profile?resolution=1", data=json.dumps(pointJson), headers=header, timeout=3)
 
             if request.status_code == requests.codes.ok:
 

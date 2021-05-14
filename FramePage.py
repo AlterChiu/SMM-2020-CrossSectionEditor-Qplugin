@@ -23,6 +23,8 @@
 """
 
 import os
+from PyQt5.QtWidgets import QDialog
+from PyQt5.QtCore import Qt
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
@@ -44,13 +46,19 @@ class FirstPage(QtWidgets.QDialog, FirstPageClass):
     def __init__(self, parent=None):
         super(FirstPage, self).__init__(parent)
         self.setupUi(self)
+        self.setWindowFlag(Qt.WindowMinimizeButtonHint, True)
+        self.setWindowFlag(Qt.WindowMaximizeButtonHint, True)
 
 class PlotPage(QtWidgets.QDialog, PlotPageClass):
     def __init__(self, parent=None):
         super(PlotPage, self).__init__(parent)
         self.setupUi(self)
+        self.setWindowFlag(Qt.WindowMinimizeButtonHint, True)
+        self.setWindowFlag(Qt.WindowMaximizeButtonHint, True)
 
 class BankLinePage(QtWidgets.QDialog, BankLinePageClass):
     def __init__(self, parent=None):
         super(BankLinePage, self).__init__(parent)
         self.setupUi(self)
+        self.setWindowFlag(Qt.WindowMinimizeButtonHint, True)
+        self.setWindowFlag(Qt.WindowMaximizeButtonHint, True)
