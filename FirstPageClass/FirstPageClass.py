@@ -19,17 +19,15 @@ import os
 class FirstPageClass:
     def __init__(self , currentDlg):
         self.__dlg = currentDlg
-        self.__demComboBox = currentDlg.findChild(QtWidgets.QComboBox , "DemComboBox")
+        self.__apiComboBox = currentDlg.findChild(QtWidgets.QComboBox , "ApiComboBox")
         self.__countyComboBox = currentDlg.findChild(QtWidgets.QComboBox , "CountyComboBox")
 
         self.__nextButton = currentDlg.findChild(QtWidgets.QPushButton , "NextButton")
 
         # initial comboBox
-        self.__initialDemComboBox()
-        self.__initialCountyComboBox()
-
+        self.__initialApiComboBox(True)
         # setting connection
-        self.__demComboBox.activated.connect(lambda:self.__initialDemComboBox())
+        self.__apiComboBox.activated.connect(lambda:self.__initialApiComboBox(False))
         self.__nextButton.clicked.connect(lambda:self.__toNextPage())
 
         # output parameter
@@ -59,18 +57,29 @@ class FirstPageClass:
 
     # demGui
     #----------------------------------------------------------------------------
-    def __initialDemComboBox(self):
-        self.__demComboBox.clear()
-        for layer in AtQgisGui().getRasterLayer():
-            self.__demComboBox.addItem(layer.name() , layer)
+    def __initialApiComboBox(self,first:bool):
+        if first:
+            self.__apiComboBox.clear()
+            ApiList =  {
+                        'h2-demo.pointing.tw':'https://h2-demo.pointing.tw/api/cross-sections/',
+                        '192.168.50.78:8080':'http://192.168.50.78:8080/api/cross-sections/',
+                        'test.pointing.tw':'http://test.pointing.tw/h2/api/cross-sections/',
+                        }
+            for key,prop in ApiList.items():
+                self.__apiComboBox.addItem(key , prop)
+
+        self.__initialCountyComboBox(self.__apiComboBox.currentData())
+
+
+        
 
     # CountyComboBox
     #----------------------------------------------------------------------------
-    def __initialCountyComboBox(self):
+    def __initialCountyComboBox(self,api):
         self.__countyComboBox.clear()
         try:
-            request = requests.get("http://192.168.50.78:8080/api/cross-sections/")
-            request1 = requests.get("https://h2-demo.pointing.tw/service/dem/profile?resolution=1")
+            request = requests.get(api)
+            request1 = requests.get("https://h2-demo.pointing.tw/service/5dem/profile?resolution=1")
 
             for county in request.json():
                 countyName = str(county["basinName"])
@@ -89,7 +98,7 @@ class FirstPageClass:
         self.__nextButton.setEnabled(False)
 
       # ckeckDem
-        if self.__demComboBox.currentText == "":
+        if True:
             Exception("splitLine could not be null")
             checker = 1
             self.__nextButton.setEnabled(True)
@@ -101,7 +110,7 @@ class FirstPageClass:
             crossSectionTemptPath = QgsProcessingUtils.tempFolder() + str("\\crossSection.json")
             try:
                 # save crossSection json to file
-                request = requests.get("http://192.168.50.78:8080/api/cross-sections/" + self.__countyComboBox.currentData())
+                request = requests.get(self.__apiComboBox.currentData() + self.__countyComboBox.currentData())
                 temptJson = json.loads(request.text)
                 temptPath = os.path.dirname(__file__)
                 
