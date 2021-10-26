@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>430</width>
-    <height>225</height>
+    <height>303</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,8 +45,8 @@
   <widget class="QPushButton" name="NextButton">
    <property name="geometry">
     <rect>
-     <x>290</x>
-     <y>170</y>
+     <x>300</x>
+     <y>260</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -79,6 +79,77 @@
     <rect>
      <x>110</x>
      <y>120</y>
+     <width>261</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBox">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>20</y>
+     <width>101</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Use Local File</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="DemLabel_2">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>170</y>
+     <width>81</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+   <property name="text">
+    <string>Cross Section</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="CountyLabel_2">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>220</y>
+     <width>81</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+   <property name="text">
+    <string>DEM</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="DEMComboBox">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>220</y>
+     <width>261</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="CrossSectionComboBox">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>170</y>
      <width>261</width>
      <height>22</height>
     </rect>
